@@ -1,0 +1,11 @@
+@import "tailwindcss";
+:root { color-scheme: dark; }
+* { box-sizing: border-box; }
+body { margin: 0; background: #061226; font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; -webkit-font-smoothing: antialiased; }
+::selection { background: #7096bf; color: white; }
+.hoodie-image { filter: blur(12px) saturate(.65); transform: scale(1.065); object-position: center 61%; }
+.background-shading { background: linear-gradient(180deg, rgba(2,10,25,.68), transparent 36%, rgba(2,10,25,.30) 75%, rgba(2,10,25,.85)), radial-gradient(ellipse at center, rgba(16,39,67,.12), rgba(2,9,22,.50)); }
+.launch-content { animation: reveal 1.3s ease-out both; }
+@keyframes reveal { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+@media (max-width: 640px) { .hoodie-image { object-position: 45% center; filter: blur(10px) saturate(.65); } }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } }
