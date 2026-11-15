@@ -1,4 +1,5 @@
 "use client";
+import type { CheckoutCustomer } from "../../lib/orders/customer";
 import { useCallback, useEffect, useState } from "react";
 import { money } from "../../lib/catalog";
 type AdminOrder = {
@@ -9,6 +10,7 @@ type AdminOrder = {
   discount_total: number;
   total_before_shipping: number;
   created_at: string;
+  customer_details: CheckoutCustomer | null;
   items: {
     product_sku: string;
     product_name: string;
@@ -201,6 +203,27 @@ export function AdminDashboard({ configured }: { configured: boolean }) {
                   <span className="status-badge">{o.status}</span>
                   <strong>{money(o.total_before_shipping)}</strong>
                 </div>
+                {o.customer_details && (
+                  <div style={{ overflowWrap: "anywhere" }}>
+                    <h3>Customer & delivery</h3>
+                    <p dir="auto">
+                      {o.customer_details.name} · {o.customer_details.phone}
+                    </p>
+                    <p dir="auto">
+                      {o.customer_details.governorate} ·{" "}
+                      {o.customer_details.area} · {o.customer_details.address}
+                    </p>
+                    {o.customer_details.paymentPreference && (
+                      <p>
+                        Payment preference:{" "}
+                        {o.customer_details.paymentPreference}
+                      </p>
+                    )}
+                    {o.customer_details.notes && (
+                      <p dir="auto">{o.customer_details.notes}</p>
+                    )}
+                  </div>
+                )}
                 <div className="table-scroll">
                   <table>
                     <thead>

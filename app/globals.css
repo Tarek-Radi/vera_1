@@ -2535,3 +2535,13 @@ td small {
   from { opacity: .65; transform: translateY(14px); }
   to { opacity: 1; transform: none; }
 }
+
+.order-summary:has(.checkout-form) { position: static; }
+.checkout-form { margin-top: 1.5rem; }
+.checkout-form fieldset { border:0; padding:0; margin:1rem 0; min-width:0; display:grid; gap:.85rem; }
+.checkout-form label, .checkout-message { display:grid; gap:.4rem; font-size:.85rem; }
+.checkout-form input, .checkout-message textarea { width:100%; min-width:0; box-sizing:border-box; border:1px solid #b9c8d4; padding:.75rem; color:#08182b; background:#fff; font:inherit; }
+.checkout-message textarea { white-space:pre-wrap; overflow-wrap:anywhere; line-height:1.8; resize:vertical; }
+.checkout-form input:focus { outline:2px solid #8fbde3; outline-offset:2px; }
+
+.invoice-ready .button[lang="ar"] { font-size: 1rem; letter-spacing: 0; }

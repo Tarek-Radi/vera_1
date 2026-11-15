@@ -1,5 +1,24 @@
 # VERA — Wear Your Identity
 
+## Temporary database-free checkout (currently enabled)
+
+`NEXT_PUBLIC_CHECKOUT_MODE=whatsapp` enables WhatsApp-only checkout. This is now the default in `config/checkout.ts` and explicitly selected in `wrangler.jsonc`. It requires no Supabase, `DATABASE_URL`, or `COUPON_HMAC_SECRET`. The database configuration instructions further below apply only when restoring `database` mode.
+
+- Local Next.js: set `NEXT_PUBLIC_CHECKOUT_MODE=whatsapp` in `.env.local` and restart `npm run dev` (or rebuild a production build).
+- Cloudflare: set `vars.NEXT_PUBLIC_CHECKOUT_MODE` to `whatsapp` in `wrangler.jsonc`, then `npm run build:cloudflare` and `npm run preview:cloudflare`. This public setting is compiled into both server and browser code; changing only a runtime secret is insufficient. Rebuild whenever switching modes.
+- Check with `npm run checkout:check` or `npm run checkout:check -- --workers`. The selected mode checks the configured WhatsApp destination without initializing a database client.
+- Destination remains `storeWhatsApp` in `config/brand.ts`: `201009785343`. Missing/invalid numbers fail validation; no alternative is invented.
+- Once ready to publish later, confirm the existing Worker identity and HTTPS origins, then use `npm run deploy:cloudflare`. In WhatsApp mode it no longer requires Supabase public settings or database/coupon secrets. Nothing was deployed during this task.
+
+The server validates customer details, catalog availability, quantity and size, and uses the real catalog selling price (including existing sale pricing). Browser prices/totals/shipping fees/customization charges are rejected. Shipping has no configured tariff and is clearly additional, “يُحدد بعد التأكيد”. Coupons, reservations and redemptions are disabled; coupon controls disappear and manually submitted codes are rejected. Old browser cart coupon selections are removed when loading this mode. Custom design is still Coming Soon: there are no priced custom-print products/upload references; unpriced custom fields are rejected rather than invented.
+
+Orders are followed up **through WhatsApp only**. No order row, reference, central history or delivery confirmation is created. Admin order APIs and owner login are unavailable without exposing existing records or weakening authentication. Opening the chat never marks anything sent, confirmed or paid. The browser keeps the cart/customer draft for recovery; this is not a production order database. The customer must press Send in WhatsApp. Oversized messages retain the complete summary for copy/paste instead of silently dropping products.
+
+To restore database-backed checkout, set the mode to `database` in `.env.local` and `wrangler.jsonc`, provide the existing database/Auth settings and unchanged coupon secret, apply required existing migrations, then rebuild and test. Existing code, migrations and database records are retained. Do not reinitialize issued coupons.
+
+Verification: `npm test` covers credential-free pricing, Arabic/multiple items, invalid input, unsupported customization, missing destination and repeats; `npm run test:e2e:whatsapp` exercises actual workerd with empty database/coupon/Auth settings, coupon/admin rejection and intercepted same-tab WhatsApp navigation. Legacy database browser tests require a build in `database` mode and isolated PostgreSQL fixtures.
+
+
 The existing VERA Next.js application, expanded into an Egyptian fashion store. The original logo and photography are preserved. The catalog comes from `collection/`, shopping bags persist in the browser, and a private PostgreSQL backend creates order requests and manages one-use coupon reservations. Customers send their own invoice through WhatsApp to **+201009785343**. No online payments are collected.
 
 ## Run locally
@@ -114,13 +133,19 @@ Generation uses 96 bits of cryptographic randomness per code and exclusive file 
 
 ## WhatsApp checkout and retries
 
-The backend validates SKU, availability, size and quantity; rejects client-supplied prices; checks coupons; creates a unique order number; and builds the invoice from persisted line items. It returns a URL beginning `https://wa.me/201009785343?text=` with the whole message URL-encoded.
+The final **Complete order via WhatsApp** button validates required name, mobile, governorate, city/area and full address, then creates/reuses the pending order through the existing server-priced PostgreSQL flow. Optional payment preference and notes are included. It immediately navigates the same tab to a fully encoded Arabic WhatsApp summary. The customer still must press **Send**; opening WhatsApp does not mark anything sent, paid or confirmed.
 
-The customer clicks **Open WhatsApp**, then **Send**. The website never reports that a message was sent or payment received. The same button retries the same message. Refreshing checkout offers **Reopen order invoice**, using the existing idempotency key. Concurrent retries produce the same order. Changed contents cannot reuse an old key. Expired/cancelled requests require a new checkout. The bag remains available until the customer removes its items.
+**Owner number:** edit `storeWhatsApp` in `config/brand.ts` (currently `201009785343`, reused from the existing store). It is normalized and validated centrally; use an international country code without a leading zero. Rebuild after changing it.
 
-Invoice contains order number, names, SKUs, colours, sizes, quantities, unit prices, subtotals, masked coupon labels, percentages, actual savings, total before shipping, and unconfirmed payment/delivery details. Only masked coupon labels are stored in order rows. Browser coupon inputs remain in the customer's own bag storage; the complete private batch never enters the browser.
+**Database prerequisite:** before using this checkout on an existing store, back up the database and apply the additive `supabase/migrations/002_checkout_customer.sql`, or run `npm run db:migrate` from the trusted local environment pointing at the correct database. The migration adds nullable customer details; it does not delete/backfill old orders or reset coupons. Migration was exercised only on isolated localhost test data. No production migration/deployment was performed.
 
-Sensitive endpoints have bounded JSON bodies, strict Zod schemas, same-origin checks and database-backed rate limiting. On Vercel, the trusted `x-vercel-forwarded-for` header identifies the network bucket; on local/other hosts a shared fallback bucket is used. Configure an equivalent trusted platform header before moving to another host. Quote limit is 60/minute, checkout 10/minute and login 6/minute per bucket. Supabase also applies its Auth limits. There are no anonymous order-list or coupon-list APIs. For routine database housekeeping, old rate-limit buckets can be deleted using a trusted scheduled database job; never purge order history without an approved retention policy.
+The summary uses persisted item prices, quantities, colors, sizes, actual discounts and the submitted coupon only after validation. No SKU/technical IDs are included. Shipping remains **يُحدد بعد التأكيد** because no approved shipping tariff exists; the amount is explicitly before shipping. Payment preference is a request, not payment acceptance or proof of payment.
+
+Requests persist an idempotency key before the network call, covering both items and validated customer details. Concurrent identical retries reuse one record. The cart is retained; form and prepared summary are saved in this tab's session storage for return/reload. **فتح واتساب** and **نسخ تفاصيل الطلب** provide fallbacks; clipboard denial selects the full message for manual copying. Above a conservative 8,000-character encoded-link threshold, no product is dropped: the complete summary remains available to copy, with instructions to paste it into the plain owner chat.
+
+Custom design remains the existing Coming Soon page. There is no priced customization or uploaded-design storage in this repository. Unsupported printing/charge/design fields are rejected by strict server validation, rather than accepting unpriced customization or unusable local/blob references.
+
+Checks: `npm test`, `npm run typecheck`, `npm run lint`, `npm run build`, `npm run build:cloudflare`, and `npm run test:e2e:cloudflare` with an isolated localhost `vera_test` database. Browser tests intercept WhatsApp navigation; no real messages are sent. Real Supabase owner authentication and live database connectivity still require account configuration.
 
 ## Managing product images
 
@@ -253,3 +278,22 @@ Database tests cover simultaneous coupon contention, invalid codes, per-line dis
 - **Private CSV already exists:** this is intentional protection. Back it up; do not generate a replacement batch or change the HMAC secret after issuing codes.
 
 See `docs/IMPLEMENTATION.md` for the source map, verification results and remaining launch configuration.
+
+### Diagnosing “Online checkout is being set up”
+
+This exact error is thrown by `lib/db/client.ts` when `DATABASE_URL` is absent. WhatsApp navigation occurs only after the order is saved; this is not a popup problem. Never bypass the database write to remove the message.
+
+For local Next.js, copy `.env.example` to `.env.local`. For local Workers preview, copy `.dev.vars.example` to `.dev.vars`. Fill the existing store's `DATABASE_URL` (Supabase transaction-pooler connection string), `DATABASE_SSL=require`, and the existing `COUPON_HMAC_SECRET` (at least 32 characters, matching imported coupon verifiers). Do not generate a replacement secret for already issued coupons. Restart the local server after setting values.
+
+Run `npm run checkout:check` for Next.js or `npm run checkout:check -- --workers` for local workerd. This reports missing variable names, checks connectivity/schema without changing records, and never prints secrets. It does not inspect deployed Cloudflare secrets. Apply the existing SQL migrations, including `002_checkout_customer.sql`, with `npm run db:migrate` from a trusted terminal configured for the intended database. Back up existing data first.
+
+For Cloudflare production, first confirm the existing Worker name/account in `wrangler.jsonc`; its current placeholder must not be used. Then configure that Worker's **Settings → Variables and Secrets**:
+
+- Secret `DATABASE_URL`: the existing production transaction-pooler URI.
+- Secret `COUPON_HMAC_SECRET`: the existing coupon verifier secret.
+- Variable `DATABASE_SSL`: `require` (already in Wrangler config).
+- Variables `SITE_URL` and `NEXT_PUBLIC_SITE_URL`: the actual HTTPS store origin.
+
+Alternatively, after confirming the correct Worker, run `npx wrangler secret put DATABASE_URL` and `npx wrangler secret put COUPON_HMAC_SECRET`, entering values interactively. These are remote changes for the owner to perform later; this task did not upload secrets or deploy. Public Supabase URL/key settings are additionally needed for owner authentication, not for the ordinary database-backed WhatsApp checkout.
+
+The destination is already configured as `201009785343` in `config/brand.ts` (`storeWhatsApp`). No replacement number is required. Once storage is configured, the existing final button saves/reuses the validated order and navigates directly to the prefilled Arabic message in the same tab. Customers press Send only inside WhatsApp. Cart/details remain recoverable on errors; failed quote validation now offers **Retry validation**.

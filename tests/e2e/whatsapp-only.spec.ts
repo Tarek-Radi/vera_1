@@ -1,0 +1,24 @@
+import {test,expect} from '@playwright/test';
+import {products} from '../../lib/catalog';
+import {testCustomer} from '../fixtures';
+test('credential-free checkout and direct WhatsApp handoff',async({page,request})=>{
+ const items=products.slice(0,2).map(p=>({sku:p.sku,size:p.sizes[0],quantity:1}));
+ const input={items,customer:testCustomer,idempotencyKey:'0a127446-715a-4d38-a812-625cbb3d5800'};
+ const response=await request.post('/api/checkout',{data:input});expect(response.status()).toBe(200);
+ const order=await response.json();expect(order.saved).toBe(false);expect(order.orderNumber).toBeUndefined();
+ const url=new URL(order.whatsappUrl);expect(url.hostname).toBe('wa.me');expect(url.pathname).toBe('/201009785343');expect(url.searchParams.get('text')).toBe(order.invoice);
+ for(const p of products.slice(0,2))expect(order.invoice).toContain(p.name);
+ expect((await request.post('/api/checkout',{data:{...input,items:[{...items[0],coupon:'VALID20CODE'}]}})).status()).toBe(400);
+ expect((await request.post('/api/checkout',{data:{...input,customer:{...testCustomer,name:''}}})).status()).toBe(400);
+ expect((await request.get('/api/admin/orders')).status()).toBe(503);
+ expect((await request.post('/api/admin/session',{data:{email:'test@example.com',password:'unused'}})).status()).toBe(503);
+ await page.addInitScript(items=>{localStorage.setItem('vera-bag-v1',JSON.stringify(items));sessionStorage.setItem('vera-intro','seen');},items);
+ await page.route('https://wa.me/**',route=>route.fulfill({contentType:'text/html',body:'Intercepted only; no message sent.'}));
+ await page.goto(`/products/${products[0].slug}`);await expect(page.locator('#product-coupon')).toHaveCount(0);
+ await page.goto('/checkout');await expect(page.getByText(/Coupon reservations last/)).toHaveCount(0);
+ for(const [field,value] of Object.entries(testCustomer))await page.locator(`input[name="${field}"]`).fill(value);
+ await page.getByRole('button',{name:'Complete order via WhatsApp'}).click();await expect(page).toHaveURL(/^https:\/\/wa.me\//);
+ expect(new URL(page.url()).searchParams.get('text')).toContain(testCustomer.name);
+ await page.goBack();await expect(page.locator('input[name="name"]')).toHaveValue(testCustomer.name);
+ await expect(page.locator('.cart-line')).toHaveCount(2);
+});

@@ -15,6 +15,7 @@
   "preview_urls": false,
   "vars": {
     "VERA_RUNTIME": "cloudflare",
+    "NEXT_PUBLIC_CHECKOUT_MODE": "whatsapp",
     "DATABASE_SSL": "require",
     "SITE_URL": "http://127.0.0.1:8787",
     "NEXT_PUBLIC_SITE_URL": "http://127.0.0.1:8787",

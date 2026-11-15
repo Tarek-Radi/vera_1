@@ -1,3 +1,4 @@
+import { testCustomer } from "../fixtures";
 import { expect, test } from "@playwright/test";
 import { createHash, randomUUID } from "node:crypto";
 import postgres from "postgres";
@@ -25,13 +26,13 @@ test("Workers requests persist separate orders and reject forged prices/admin ac
     expect((await quote.json()).totalBeforeShipping).toBe(60000);
     const key = randomUUID();
     const first = await request.post("/api/checkout", {
-      data: { items, idempotencyKey: key },
+      data: { customer: testCustomer, items, idempotencyKey: key },
     });
     expect(first.status()).toBe(200);
     const order = await first.json();
     // A second HTTP request must reconnect to Postgres and find the durable order.
     const retry = await request.post("/api/checkout", {
-      data: { items, idempotencyKey: key },
+      data: { customer: testCustomer, items, idempotencyKey: key },
     });
     expect(retry.status()).toBe(200);
     expect((await retry.json()).orderNumber).toBe(order.orderNumber);
@@ -41,7 +42,7 @@ test("Workers requests persist separate orders and reject forged prices/admin ac
     expect(rows).toHaveLength(1);
     expect(rows[0].total_before_shipping).toBe(60000);
     const second = await request.post("/api/checkout", {
-      data: { items, idempotencyKey: randomUUID() },
+      data: { customer: testCustomer, items, idempotencyKey: randomUUID() },
     });
     expect(second.status()).toBe(200);
     expect((await second.json()).orderNumber).not.toBe(order.orderNumber);

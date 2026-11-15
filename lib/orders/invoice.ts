@@ -1,54 +1,70 @@
 import { brand } from "../../config/brand";
-import { money } from "../catalog";
+import { whatsappHandoff } from "../whatsapp";
 import type { PricedLine } from "./validation";
+import type { CheckoutCustomer } from "./customer";
 export type OrderInvoice = {
   orderNumber: string;
   status: string;
+  customer?: CheckoutCustomer | null;
   items: PricedLine[];
   subtotal: number;
   discountTotal: number;
   totalBeforeShipping: number;
+  shippingCharge?: number | null;
   expiresAt: string;
 };
-export function invoiceText(order: OrderInvoice) {
+const egp = (n: number) =>
+  `${new Intl.NumberFormat("en-EG", { maximumFractionDigits: 2 }).format(n / 100)} ج.م`;
+export function invoiceText(o: OrderInvoice) {
+  const c = o.customer;
   return [
-    "VERA | NEW ORDER",
-    `Order Number: ${order.orderNumber}`,
+    "طلب جديد من VERA",
+    ...(o.orderNumber ? [`رقم الطلب: ${o.orderNumber}`] : []),
+    ...(o.status === "PENDING" ? ["حالة الطلب: في انتظار التأكيد"] : []),
+    ...(c
+      ? [
+          "",
+          "بيانات العميل:",
+          `الاسم: ${c.name}`,
+          `الموبايل: ${c.phone}`,
+          `المحافظة: ${c.governorate}`,
+          `المدينة / المنطقة: ${c.area}`,
+          `العنوان بالتفصيل: ${c.address}`,
+        ]
+      : []),
     "",
-    "ORDER DETAILS",
-    ...order.items.flatMap((item, i) => [
+    "تفاصيل الطلب:",
+    ...o.items.flatMap((x, i) => [
       "",
-      `ITEM ${i + 1}`,
-      `Product: ${item.name}`,
-      `Code: ${item.sku}`,
-      `Color: ${item.color}`,
-      `Size: ${item.size}`,
-      `Quantity: ${item.quantity}`,
-      `Unit Price: ${money(item.unitPrice)}`,
-      `Subtotal: ${money(item.subtotal)}`,
-      ...(item.discountPercent
+      `${i + 1}. ${x.name}`,
+      `اللون: ${x.color}`,
+      `المقاس: ${x.size}`,
+      `الكمية: ${x.quantity}`,
+      `سعر القطعة: ${egp(x.unitPrice)}`,
+      ...(x.discountAmount > 0
         ? [
-            `Coupon: ${item.couponLabel || "Applied"}`,
-            `Coupon Discount: ${item.discountPercent}%`,
-            `Discount Value: -${money(item.discountAmount)}`,
+            `الكوبون المستخدم: ${x.coupon || x.couponLabel} (${x.discountPercent}%)`,
+            `خصم المنتج: ${egp(x.discountAmount)}`,
           ]
         : []),
-      `Item Total: ${money(item.lineTotal)}`,
+      `إجمالي المنتج: ${egp(x.lineTotal)}`,
     ]),
     "",
-    "ORDER SUMMARY",
-    `Subtotal: ${money(order.subtotal)}`,
-    `Total Coupon Discount: -${money(order.discountTotal)}`,
-    `TOTAL BEFORE SHIPPING: ${money(order.totalBeforeShipping)}`,
+    "ملخص الحساب:",
+    `قيمة المنتجات: ${egp(o.subtotal)}`,
+    ...(o.discountTotal ? [`إجمالي الخصم: ${egp(o.discountTotal)}`] : []),
+    `الشحن: ${o.shippingCharge == null ? "يُحدد بعد التأكيد" : egp(o.shippingCharge)}`,
+    o.shippingCharge == null
+      ? `المبلغ المعروف قبل الشحن: ${egp(o.totalBeforeShipping)} — الشحن إضافي`
+      : `الإجمالي شامل الشحن: ${egp(o.totalBeforeShipping + o.shippingCharge)}`,
+    ...(c?.paymentPreference
+      ? ["", `طريقة الدفع المطلوبة: ${c.paymentPreference}`]
+      : []),
+    ...(c?.notes ? ["", `ملاحظات: ${c.notes}`] : []),
     "",
-    "PAYMENT & DELIVERY",
-    "Payment Method: To be confirmed with VERA via WhatsApp.",
-    "Possible arrangements: Cash on Delivery, InstaPay, Vodafone Cash or another agreed method.",
-    "Delivery Address: To be confirmed via WhatsApp.",
-    "Delivery Fees: To be confirmed by VERA.",
-    "",
-    "Hello VERA! I would like to confirm this order. Please contact me to arrange delivery and payment. Thank you!",
+    "برجاء تأكيد التوفر وتفاصيل الشحن والدفع.",
+    "ده ملخص طلب، مش إثبات دفع أو فاتورة ضريبية.",
   ].join("\n");
 }
-export const invoiceUrl = (order: OrderInvoice) =>
-  `https://wa.me/${brand.whatsapp}?text=${encodeURIComponent(invoiceText(order))}`;
+export const invoiceUrl = (o: OrderInvoice) =>
+  whatsappHandoff(brand.whatsapp, invoiceText(o)).whatsappUrl;

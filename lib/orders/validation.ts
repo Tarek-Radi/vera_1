@@ -1,3 +1,4 @@
+import { customerSchema } from "./customer";
 import { z } from "zod";
 import { productBySku, type Product } from "../catalog";
 export class StoreError extends Error {
@@ -26,7 +27,7 @@ export const cartSchema = z
   .object({ items: z.array(lineSchema).min(1).max(20) })
   .strict();
 export const checkoutSchema = cartSchema
-  .extend({ idempotencyKey: z.string().uuid() })
+  .extend({ idempotencyKey: z.string().uuid(), customer: customerSchema })
   .strict();
 export type CartLine = z.infer<typeof lineSchema>;
 export type PricedLine = CartLine & {

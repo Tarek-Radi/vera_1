@@ -117,8 +117,9 @@ if (action === "deploy") {
     );
   if (
     !/^https:\/\//.test(config.vars.NEXT_PUBLIC_SITE_URL) ||
-    !config.vars.NEXT_PUBLIC_SUPABASE_URL ||
-    !config.vars.NEXT_PUBLIC_SUPABASE_ANON_KEY
+    ((config.vars.NEXT_PUBLIC_CHECKOUT_MODE || "whatsapp") === "database" &&
+      (!config.vars.NEXT_PUBLIC_SUPABASE_URL ||
+        !config.vars.NEXT_PUBLIC_SUPABASE_ANON_KEY))
   )
     throw new Error(
       "Configure the production HTTPS origin and existing Supabase public Auth settings in wrangler.jsonc before deployment.",
@@ -130,14 +131,16 @@ if (action === "deploy") {
     throw new Error(
       "The configured Worker has no existing deployment. Refusing to create a new site.",
     );
-  const secrets = JSON.parse(
-    await run(wrangler, ["secret", "list", "--format", "json"], true),
-  );
-  for (const name of ["DATABASE_URL", "COUPON_HMAC_SECRET"]) {
-    if (!secrets.some((secret) => secret.name === name))
-      throw new Error(
-        `Configure the ${name} Worker secret on the confirmed existing Worker before deploying. Its value is never printed here.`,
-      );
+  if ((config.vars.NEXT_PUBLIC_CHECKOUT_MODE || "whatsapp") === "database") {
+    const secrets = JSON.parse(
+      await run(wrangler, ["secret", "list", "--format", "json"], true),
+    );
+    for (const name of ["DATABASE_URL", "COUPON_HMAC_SECRET"]) {
+      if (!secrets.some((secret) => secret.name === name))
+        throw new Error(
+          `Configure the ${name} Worker secret on the confirmed existing Worker before deploying. Its value is never printed here.`,
+        );
+    }
   }
   await build();
   await check();

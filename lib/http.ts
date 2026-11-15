@@ -1,3 +1,4 @@
+import { databaseFreeCheckout } from "../config/checkout";
 import "server-only";
 import { createHash } from "node:crypto";
 import { NextResponse } from "next/server";
@@ -40,7 +41,7 @@ export async function requestBody(request: Request) {
   }
 }
 export async function rateLimit(request: Request, scope: string, limit = 30) {
-  if (!databaseConfigured()) return; // Coupon/order paths fail closed when persistence is absent.
+  if (databaseFreeCheckout || !databaseConfigured()) return; // Coupon/order paths fail closed when persistence is absent.
   // These headers are supplied by the named host, never arbitrary x-forwarded-for.
   const ip =
     process.env.VERA_RUNTIME === "cloudflare"
@@ -64,7 +65,9 @@ export async function rateLimit(request: Request, scope: string, limit = 30) {
 export function storeRoute(handler: (request: Request) => Promise<Response>) {
   return async (request: Request) => {
     try {
-      return await withDatabaseRequest(() => handler(request));
+      return databaseFreeCheckout
+        ? await handler(request)
+        : await withDatabaseRequest(() => handler(request));
     } catch (error) {
       return errorResponse(error);
     }

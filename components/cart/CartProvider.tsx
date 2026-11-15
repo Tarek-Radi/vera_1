@@ -1,4 +1,5 @@
 "use client";
+import { databaseFreeCheckout } from "../../config/checkout";
 import {
   createContext,
   useContext,
@@ -53,7 +54,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
                 sku: p.sku,
                 size: x.size,
                 quantity: x.quantity,
-                ...(typeof x.coupon === "string" &&
+                ...(!databaseFreeCheckout &&
+                typeof x.coupon === "string" &&
                 /^[A-Z0-9-]{8,64}$/.test(x.coupon)
                   ? { coupon: x.coupon }
                   : {}),

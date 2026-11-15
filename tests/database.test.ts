@@ -12,7 +12,10 @@ suite("real PostgreSQL order and coupon lifecycle", () => {
   let verifier: typeof import("../lib/coupons/crypto").couponVerifier;
   const h = products.find((p) => p.identity === "black_hoodie")!,
     scarf = products.find((p) => p.identity === "white_hijab")!;
-  const checkout = (items: Parameters<typeof service.checkout>[0], key: string) => service.checkout(items, key, testCustomer);
+  const checkout = (
+    items: Parameters<typeof service.checkout>[0],
+    key: string,
+  ) => service.checkout(items, key, testCustomer);
   const line = (coupon?: string) => ({
     sku: h.sku,
     size: "XL",
@@ -45,6 +48,22 @@ suite("real PostgreSQL order and coupon lifecycle", () => {
     const { db } = await import("../lib/db/client");
     await db().end();
   });
+  it("persists customer details and rejects changed details on the same key", async () => {
+    const key = randomUUID();
+    await checkout([line()], key);
+    const [row] =
+      await sql`select customer_details, status, payment_status from orders`;
+    expect(row.customer_details).toEqual(testCustomer);
+    expect(row.status).toBe("PENDING");
+    expect(row.payment_status).toBe("UNCONFIRMED");
+    await expect(
+      service.checkout([line()], key, {
+        ...testCustomer,
+        address: "Different test address",
+      }),
+    ).rejects.toThrow("delivery details changed");
+    expect(await sql`select id from orders`).toHaveLength(1);
+  });
   it("validates real coupons, rejects invalid and keeps plaintext out of stored records", async () => {
     expect(await service.quote([line("VALID15CODE")])).toMatchObject({
       discountTotal: 9000,
@@ -72,14 +91,12 @@ suite("real PostgreSQL order and coupon lifecycle", () => {
   it("returns one order for concurrent idempotent retries and rejects changed payloads", async () => {
     const key = randomUUID();
     const results = await Promise.all(
-      Array.from({ length: 5 }, () =>
-        checkout([line("VALID15CODE")], key),
-      ),
+      Array.from({ length: 5 }, () => checkout([line("VALID15CODE")], key)),
     );
     expect(new Set(results.map((o) => o.orderNumber)).size).toBe(1);
-    await expect(
-      checkout([{ ...line(), quantity: 2 }], key),
-    ).rejects.toThrow("delivery details changed");
+    await expect(checkout([{ ...line(), quantity: 2 }], key)).rejects.toThrow(
+      "delivery details changed",
+    );
   });
   it("supports independent coupons on different lines", async () => {
     const o = await checkout(
@@ -106,10 +123,7 @@ suite("real PostgreSQL order and coupon lifecycle", () => {
         await sql`select status from coupons where code_verifier = ${verifier("VALID15CODE")}`
       )[0].status,
     ).toBe("AVAILABLE");
-    const newOrder = await checkout(
-      [line("VALID15CODE")],
-      randomUUID(),
-    );
+    const newOrder = await checkout([line("VALID15CODE")], randomUUID());
     [o] =
       await sql`select id from orders where order_number = ${newOrder.orderNumber}`;
     await service.changeOrder(o.id, "CONFIRMED", randomUUID());
@@ -119,9 +133,9 @@ suite("real PostgreSQL order and coupon lifecycle", () => {
         await sql`select status from coupons where code_verifier = ${verifier("VALID15CODE")}`
       )[0].status,
     ).toBe("REDEEMED");
-    await expect(
-      checkout([line("VALID15CODE")], randomUUID()),
-    ).rejects.toThrow("already used");
+    await expect(checkout([line("VALID15CODE")], randomUUID())).rejects.toThrow(
+      "already used",
+    );
   });
   it("expires abandoned reservations and blocks late confirmation", async () => {
     await checkout([line("VALID15CODE")], randomUUID());

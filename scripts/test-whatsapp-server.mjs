@@ -1,0 +1,13 @@
+import { mkdir, writeFile } from 'node:fs/promises';
+import path from 'node:path';
+import { spawn } from 'node:child_process';
+import { readCloudflareConfig } from './read-cloudflare-config.mjs';
+const config=await readCloudflareConfig();
+config.name='vera-whatsapp-local-test';delete config.account_id;
+config.main=path.resolve('.open-next/worker.js');config.assets.directory=path.resolve('.open-next/assets');
+config.services=[{binding:'WORKER_SELF_REFERENCE',service:config.name}];
+config.vars={VERA_RUNTIME:'cloudflare',SITE_URL:'http://127.0.0.1:8789',DATABASE_URL:'',COUPON_HMAC_SECRET:'',NEXT_PUBLIC_SUPABASE_URL:'',NEXT_PUBLIC_SUPABASE_ANON_KEY:'',NEXT_PUBLIC_CHECKOUT_MODE:'whatsapp'};
+await mkdir('.local/whatsapp-test',{recursive:true});
+await writeFile('.local/whatsapp-test/wrangler.json',JSON.stringify(config));
+const child=spawn(process.execPath,['node_modules/wrangler/bin/wrangler.js','dev','--config','.local/whatsapp-test/wrangler.json','--local','--port','8789','--ip','127.0.0.1','--log-level','warn'],{stdio:'inherit',windowsHide:true,env:{...process.env,CLOUDFLARE_LOAD_DEV_VARS_FROM_DOT_ENV:'false'}});
+child.on('exit',code=>process.exit(code??0));process.on('SIGTERM',()=>child.kill());

@@ -1,3 +1,4 @@
+import { databaseFreeCheckout } from "./checkout";
 import { brand } from "./brand";
 import { policies } from "./policies";
 export const faqs = [
@@ -197,11 +198,11 @@ export const informationPages: Record<
       ],
       [
         "Order records",
-        "When you request an invoice, we store its order number, selected product information, prices, discounts, order status and timestamps in our PostgreSQL database. Coupon codes are verified using keyed hashes; order records use masked coupon labels. Checkout also stores your name, phone, governorate, city/area, full address, optional payment preference and notes. No card or bank account credentials are collected. These details are visible only through protected owner access.",
+        databaseFreeCheckout ? "WhatsApp-only checkout does not store order or customer records on our server. Your cart and customer draft remain in your browser for recovery. The complete summary goes to WhatsApp when you open the chat; you must press Send. We cannot verify message delivery or offer a central order history in this mode." : "When you request an invoice, we store its order number, selected product information, prices, discounts, order status and timestamps in our PostgreSQL database. Coupon codes are verified using keyed hashes; order records use masked coupon labels. Checkout also stores your name, phone, governorate, city/area, full address, optional payment preference and notes. No card or bank account credentials are collected. These details are visible only through protected owner access.",
       ],
       [
         "WhatsApp and Instagram",
-        "When checkout opens WhatsApp, your order summary and contact/delivery details are included in the link. The message is sent to VERA only when you press Send. Your checkout draft and prepared summary are kept in this browser tab�s session storage so you can return or retry. For long messages, copy the complete summary and paste it in the chat. Delivery, contact and payment details you share there are processed through WhatsApp and VERA’s communications. WhatsApp and Instagram have their own privacy practices.",
+        "When checkout opens WhatsApp, your order summary and contact/delivery details are included in the link. The message is sent to VERA only when you press Send. Your checkout draft and prepared summary are kept in this browser tab’s session storage so you can return or retry. For long messages, copy the complete summary and paste it in the chat. Delivery, contact and payment details you share there are processed through WhatsApp and VERA’s communications. WhatsApp and Instagram have their own privacy practices.",
       ],
       [
         "Owner authentication",

@@ -1,3 +1,4 @@
+import { databaseFreeCheckout } from "../../../../config/checkout";
 import { NextResponse } from "next/server";
 import { z } from "zod";
 import { authClient, requireAdmin } from "../../../../lib/auth/server";
@@ -10,6 +11,15 @@ import {
 import { StoreError } from "../../../../lib/orders/validation";
 export const POST = storeRoute(async function POST(request: Request) {
   try {
+    if (databaseFreeCheckout)
+      return NextResponse.json(
+        {
+          error:
+            "Central order management is unavailable in WhatsApp-only mode.",
+          code: "ADMIN_DISABLED",
+        },
+        { status: 503 },
+      );
     await rateLimit(request, "login", 6);
     const { email, password } = z
       .object({ email: z.email(), password: z.string().min(1).max(256) })
@@ -23,6 +33,15 @@ export const POST = storeRoute(async function POST(request: Request) {
         401,
       );
     try {
+      if (databaseFreeCheckout)
+        return NextResponse.json(
+          {
+            error:
+              "Central order management is unavailable in WhatsApp-only mode.",
+            code: "ADMIN_DISABLED",
+          },
+          { status: 503 },
+        );
       await requireAdmin();
     } catch (e) {
       await auth.auth.signOut();
@@ -35,6 +54,15 @@ export const POST = storeRoute(async function POST(request: Request) {
 });
 export const DELETE = storeRoute(async function DELETE(request: Request) {
   try {
+    if (databaseFreeCheckout)
+      return NextResponse.json(
+        {
+          error:
+            "Central order management is unavailable in WhatsApp-only mode.",
+          code: "ADMIN_DISABLED",
+        },
+        { status: 503 },
+      );
     await requestBody(request);
     const auth = await authClient();
     await auth.auth.signOut();

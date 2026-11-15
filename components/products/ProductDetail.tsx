@@ -1,4 +1,5 @@
 "use client";
+import { databaseFreeCheckout } from "../../config/checkout";
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -254,37 +255,42 @@ export function ProductDetail({
               : "Currently unavailable"}
           </p>
         </div>
-        <div className="coupon-box">
-          <label htmlFor="product-coupon">Have a private coupon?</label>
-          <div className="input-button">
-            <input
-              id="product-coupon"
-              value={coupon}
-              onChange={(e) => {
-                setCoupon(e.target.value);
-                setCouponResult(null);
-              }}
-              placeholder="Enter your code"
-              maxLength={64}
-              autoComplete="off"
-            />
-            <button disabled={checking || !coupon.trim()} onClick={applyCoupon}>
-              {checking ? "Checking…" : "Apply"}
-            </button>
+        {!databaseFreeCheckout && (
+          <div className="coupon-box">
+            <label htmlFor="product-coupon">Have a private coupon?</label>
+            <div className="input-button">
+              <input
+                id="product-coupon"
+                value={coupon}
+                onChange={(e) => {
+                  setCoupon(e.target.value);
+                  setCouponResult(null);
+                }}
+                placeholder="Enter your code"
+                maxLength={64}
+                autoComplete="off"
+              />
+              <button
+                disabled={checking || !coupon.trim()}
+                onClick={applyCoupon}
+              >
+                {checking ? "Checking…" : "Apply"}
+              </button>
+            </div>
+            {couponResult && (
+              <p className="success" role="status">
+                {couponResult.percent}% applied · Save{" "}
+                {money(couponResult.savings)}
+                <br />
+                Item total: {money(couponResult.total)}
+              </p>
+            )}
+            <small>
+              A coupon applies to this item and its selected quantity.
+              Availability is rechecked at checkout.
+            </small>
           </div>
-          {couponResult && (
-            <p className="success" role="status">
-              {couponResult.percent}% applied · Save{" "}
-              {money(couponResult.savings)}
-              <br />
-              Item total: {money(couponResult.total)}
-            </p>
-          )}
-          <small>
-            A coupon applies to this item and its selected quantity.
-            Availability is rechecked at checkout.
-          </small>
-        </div>
+        )}
         {error && (
           <p className="form-error" role="alert">
             {error}

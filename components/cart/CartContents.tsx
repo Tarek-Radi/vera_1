@@ -1,4 +1,5 @@
 "use client";
+import { databaseFreeCheckout } from "../../config/checkout";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -34,12 +35,13 @@ export function CartContents({
     setError("");
     setCanResume(false);
     if (!cart.items.length) return;
-    if (checkoutPage) {
+    if (checkoutPage && !databaseFreeCheckout) {
       try {
         const saved = JSON.parse(
           sessionStorage.getItem("vera-checkout") || "null",
         );
         if (saved?.snapshot === snapshot && typeof saved.key === "string") {
+          if (saved.result) setQuote(saved.result);
           setCanResume(true);
           setLoading(false);
           return;
@@ -171,14 +173,16 @@ export function CartContents({
                     {money(priced?.lineTotal ?? p.priceMinor * item.quantity)}
                   </strong>
                 </div>
-                <LineCoupon
-                  disabled={checkoutBusy}
-                  value={item.coupon || ""}
-                  name={p.name}
-                  update={(coupon) =>
-                    cart.update(i, { coupon: coupon || undefined })
-                  }
-                />
+                {!databaseFreeCheckout && (
+                  <LineCoupon
+                    disabled={checkoutBusy}
+                    value={item.coupon || ""}
+                    name={p.name}
+                    update={(coupon) =>
+                      cart.update(i, { coupon: coupon || undefined })
+                    }
+                  />
+                )}
                 {priced?.discountPercent ? (
                   <p className="success">
                     {priced.discountPercent}% coupon · Saved{" "}
@@ -206,7 +210,11 @@ export function CartContents({
             <dd>{money(quote?.subtotal ?? subtotal)}</dd>
           </div>
           <div>
-            <dt>Coupon discount</dt>
+            <dt>
+              {databaseFreeCheckout
+                ? "Coupon codes unavailable"
+                : "Coupon discount"}
+            </dt>
             <dd>
               {loading
                 ? "Checking…"
@@ -230,6 +238,15 @@ export function CartContents({
           <div className="form-error" role="alert">
             {error}
             <br />
+            <button
+              type="button"
+              className="text-link"
+              disabled={loading || checkoutBusy}
+              onClick={() => setQuoteRevision((value) => value + 1)}
+            >
+              Retry validation
+            </button>
+            <br />
             <a href={whatsappLink} target="_blank" rel="noreferrer">
               Contact VERA
             </a>
@@ -237,9 +254,14 @@ export function CartContents({
         )}
         {checkoutPage ? (
           <>
-            <WhatsAppCheckout key={snapshot} items={cart.items} ready={!loading && (!!quote || canResume)}
-              onValidated={setQuote} onBusyChange={setCheckoutBusy}
-              onAttemptCleared={() => setQuoteRevision((value) => value + 1)} />
+            <WhatsAppCheckout
+              key={snapshot}
+              items={cart.items}
+              ready={!loading && (!!quote || canResume)}
+              onValidated={setQuote}
+              onBusyChange={setCheckoutBusy}
+              onAttemptCleared={() => setQuoteRevision((value) => value + 1)}
+            />
             <p className="terms-note">
               Review our <Link href="/terms">terms</Link>,{" "}
               <Link href="/privacy">privacy notice</Link> and{" "}
@@ -297,7 +319,10 @@ function LineCoupon({
           maxLength={64}
           onChange={(e) => setInput(e.target.value)}
         />
-        <button disabled={disabled} onClick={() => update(input.trim().toUpperCase())}>
+        <button
+          disabled={disabled}
+          onClick={() => update(input.trim().toUpperCase())}
+        >
           Apply
         </button>
         {value && (

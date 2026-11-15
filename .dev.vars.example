@@ -1,3 +1,5 @@
+NEXT_PUBLIC_CHECKOUT_MODE=whatsapp
+# Set database and rebuild to restore stored orders/coupons/admin.
 # Copy to .dev.vars for LOCAL workerd preview only. Never commit real credentials.
 # Use an isolated staging/test database; preview checkout writes real records.
 DATABASE_URL=""

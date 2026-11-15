@@ -76,11 +76,11 @@ describe("authoritative pricing and invoices", () => {
       totalBeforeShipping: 127000,
     });
     const text = invoiceText(order);
-    expect(text).toContain(hoodie.sku);
-    expect(text).toContain("Size: XL");
-    expect(text).toContain("Quantity: 2");
-    expect(text).toContain("1,270 EGP");
-    expect(text).toContain("Delivery Fees: To be confirmed by VERA.");
+    expect(text).not.toContain(hoodie.sku);
+    expect(text).toContain("المقاس: XL");
+    expect(text).toContain("الكمية: 2");
+    expect(text).toContain("1,270 ج.م");
+    expect(text).toContain("الشحن: يُحدد بعد التأكيد");
     const url = new URL(invoiceUrl(order));
     expect(url.pathname).toBe("/201009785343");
     expect(url.searchParams.get("text")).toBe(text);

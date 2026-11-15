@@ -1,5 +1,7 @@
 # Cloudflare Workers deployment
 
+**Checkout update (2026-11-16):** apply the additive `supabase/migrations/002_checkout_customer.sql` before deploying the new customer-details checkout, including on an existing store database. The hosting migration itself still needs no database conversion. See [checkout verification](CHECKOUT-VERIFICATION.md).
+
 ## Why the old page appeared
 
 `out/` belongs to an earlier static export. `next build` now creates `.next/`, retains server routes and does not refresh `out/`. Uploading that old directory therefore publishes the old Coming Soon page. Neither directory is a complete Workers deployment.

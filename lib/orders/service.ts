@@ -1,3 +1,5 @@
+import { customerSchema, type CheckoutCustomer } from "./customer";
+import { whatsappHandoff } from "../whatsapp";
 import "server-only";
 import { createHash } from "node:crypto";
 import type { TransactionSql } from "postgres";
@@ -12,7 +14,7 @@ import {
   type CartLine,
   type PricedLine,
 } from "./validation";
-import { invoiceText, invoiceUrl, type OrderInvoice } from "./invoice";
+import { invoiceText, type OrderInvoice } from "./invoice";
 
 // This small store serializes reservation lifecycle mutations in PostgreSQL, across all server instances.
 // All checkout, expiry and admin paths acquire this lock first; no reverse lock ordering.
@@ -73,6 +75,8 @@ async function readInvoice(
   return {
     orderNumber: o.order_number,
     status: o.status,
+    customer: o.customer_details || null,
+    shippingCharge: null,
     subtotal: o.subtotal,
     discountTotal: o.discount_total,
     totalBeforeShipping: o.total_before_shipping,
@@ -92,9 +96,14 @@ async function readInvoice(
     })),
   };
 }
-export async function checkout(items: CartLine[], idempotencyKey: string) {
+export async function checkout(
+  items: CartLine[],
+  idempotencyKey: string,
+  details: CheckoutCustomer,
+) {
+  const customer = customerSchema.parse(details);
   const requestHash = createHash("sha256")
-    .update(JSON.stringify(items))
+    .update(JSON.stringify({ items, customer }))
     .digest("hex");
   const keyHash = createHash("sha256").update(idempotencyKey).digest("hex");
   const result = await db().begin(async (tx) => {
@@ -105,7 +114,7 @@ export async function checkout(items: CartLine[], idempotencyKey: string) {
     if (existing) {
       if (existing.request_hash !== requestHash)
         throw new StoreError(
-          "Your bag changed. Please start a new checkout.",
+          "Your bag or delivery details changed. Please start a new checkout.",
           409,
           "IDEMPOTENCY_CONFLICT",
         );
@@ -120,7 +129,7 @@ export async function checkout(items: CartLine[], idempotencyKey: string) {
     const priced = await priceLines(items, tx);
     const total = totals(priced.items);
     const [order] =
-      await tx`insert into orders (idempotency_key, request_hash, subtotal, discount_total, total_before_shipping, expires_at) values (${keyHash}, ${requestHash}, ${total.subtotal}, ${total.discountTotal}, ${total.totalBeforeShipping}, now() + ${brand.reservationMinutes} * interval '1 minute') returning id`;
+      await tx`insert into orders (idempotency_key, request_hash, subtotal, discount_total, total_before_shipping, expires_at, customer_details) values (${keyHash}, ${requestHash}, ${total.subtotal}, ${total.discountTotal}, ${total.totalBeforeShipping}, now() + ${brand.reservationMinutes} * interval '1 minute', ${tx.json(customer)}) returning id`;
     for (const [position, line] of priced.items.entries()) {
       const [item] =
         await tx`insert into order_items (order_id, position, product_sku, product_name, color, size, quantity, unit_price, subtotal, discount_percent, discount_amount, line_total, coupon_label) values (${order.id}, ${position}, ${line.sku}, ${line.name}, ${line.color}, ${line.size}, ${line.quantity}, ${line.unitPrice}, ${line.subtotal}, ${line.discountPercent}, ${line.discountAmount}, ${line.lineTotal}, ${line.couponLabel || null}) returning id`;
@@ -134,11 +143,16 @@ export async function checkout(items: CartLine[], idempotencyKey: string) {
     return readInvoice(tx, order.id);
   });
   const order = result as unknown as OrderInvoice;
-  return {
+  const invoice = invoiceText({
     ...order,
-    invoice: invoiceText(order),
-    whatsappUrl: invoiceUrl(order),
-  };
+    items: order.items.map((line) => ({
+      ...line,
+      coupon: line.discountAmount
+        ? items.find((i) => i.sku === line.sku && i.size === line.size)?.coupon
+        : undefined,
+    })),
+  });
+  return { ...order, invoice, ...whatsappHandoff(brand.whatsapp, invoice) };
 }
 export async function changeOrder(
   id: string,
