@@ -114,7 +114,7 @@ export default function Home() {
             <div>
               <span>02 / THE FINISHING TOUCH</span>
               <h3>
-                Hijabs & scarves <ArrowUpRight />
+                Scarves <ArrowUpRight />
               </h3>
             </div>
           </Link>

@@ -4,21 +4,36 @@
       "slug": "hoodies",
       "label": "Hoodies",
       "skuPrefix": "HOD",
-      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
       "description": "An everyday layer with a distinctly VERA point of view. Choose your colour, find your size, make it yours."
     },
     "hijab": {
       "slug": "hijabs",
-      "label": "Hijabs & Scarves",
+      "label": "Scarves",
       "skuPrefix": "HIJ",
-      "sizes": ["One Size"],
-      "description": "The finishing touch, in your colour. Discover a versatile addition to your everyday wardrobe."
+      "sizes": [
+        "One Size"
+      ],
+      "description": "The finishing touch, in your colour. Discover a versatile addition to your everyday wardrobe.",
+      "productLabel": "Scarf"
     },
     "pants": {
       "slug": "pants",
       "label": "Pants",
       "skuPrefix": "PNT",
-      "sizes": ["S", "M", "L", "XL", "XXL"],
+      "sizes": [
+        "S",
+        "M",
+        "L",
+        "XL",
+        "XXL"
+      ],
       "description": "Complete your look with VERA. Confirm fit and product details with us before ordering."
     }
   },
@@ -29,12 +44,30 @@
     }
   },
   "products": {
-    "black_hoodie": { "family": "signature-hoodie", "featured": true },
-    "burgundy_hoodie": { "family": "signature-hoodie", "featured": true },
-    "gray_hoodie": { "family": "signature-hoodie", "featured": true },
-    "black_hijab": { "family": "essential-scarf" },
-    "burgundy_hijab": { "family": "essential-scarf", "featured": true },
-    "white_hijab": { "family": "essential-scarf" }
+    "black_hoodie": {
+      "family": "signature-hoodie",
+      "featured": true
+    },
+    "burgundy_hoodie": {
+      "family": "signature-hoodie",
+      "featured": true
+    },
+    "gray_hoodie": {
+      "family": "signature-hoodie",
+      "featured": true
+    },
+    "black_hijab": {
+      "family": "essential-scarf"
+    },
+    "burgundy_hijab": {
+      "family": "essential-scarf",
+      "featured": true
+    },
+    "white_hijab": {
+      "family": "essential-scarf"
+    }
   },
-  "promotionalImages": ["some-Hoodies.jpeg"]
+  "promotionalImages": [
+    "some-Hoodies.jpeg"
+  ]
 }

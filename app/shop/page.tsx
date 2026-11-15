@@ -2,7 +2,7 @@ import { ProductGrid } from "../../components/products/ProductGrid";
 export const metadata = {
   title: "Shop the collection",
   description:
-    "Explore VERA hoodies, hijabs and everyday pieces. Find your colour and style.",
+    "Explore VERA hoodies, scarves and everyday pieces. Find your colour and style.",
   alternates: { canonical: "/shop" },
 };
 export default async function Shop({

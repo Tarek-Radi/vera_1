@@ -20,7 +20,7 @@ export const navLinks = [
   ["Home", "/"],
   ["Shop", "/shop"],
   ["Hoodies", "/collections/hoodies"],
-  ["Hijabs", "/collections/hijabs"],
+  ["Scarves", "/collections/hijabs"],
   ["Pants", "/collections/pants"],
   ["Custom design", "/custom-design"],
   ["About VERA", "/about"],

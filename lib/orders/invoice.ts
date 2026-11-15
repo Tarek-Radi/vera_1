@@ -1,3 +1,4 @@
+import { scarfWording } from "../product-wording.mjs";
 import { brand } from "../../config/brand";
 import { whatsappHandoff } from "../whatsapp";
 import type { PricedLine } from "./validation";
@@ -36,7 +37,7 @@ export function invoiceText(o: OrderInvoice) {
     "تفاصيل الطلب:",
     ...o.items.flatMap((x, i) => [
       "",
-      `${i + 1}. ${x.name}`,
+      `${i + 1}. ${scarfWording(x.name)}`,
       `اللون: ${x.color}`,
       `المقاس: ${x.size}`,
       `الكمية: ${x.quantity}`,

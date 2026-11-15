@@ -1,4 +1,5 @@
 "use client";
+import { scarfWording } from "../../lib/product-wording.mjs";
 import type { CheckoutCustomer } from "../../lib/orders/customer";
 import { useCallback, useEffect, useState } from "react";
 import { money } from "../../lib/catalog";
@@ -240,7 +241,7 @@ export function AdminDashboard({ configured }: { configured: boolean }) {
                       {o.items.map((x, i) => (
                         <tr key={i}>
                           <td>
-                            {x.product_name}
+                            {scarfWording(x.product_name)}
                             <small>{x.product_sku}</small>
                           </td>
                           <td>

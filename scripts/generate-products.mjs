@@ -1,3 +1,4 @@
+import { scarfWording } from "../lib/product-wording.mjs";
 import { createHash } from "node:crypto";
 import { promises as fs } from "node:fs";
 import path from "node:path";
@@ -64,9 +65,9 @@ export function parseProduct(relative, config) {
     slug:
       meta.slug ||
       `${title(color).toLowerCase().replace(/ /g, "-")}-${kind.toLowerCase()}-${hash.toLowerCase()}`,
-    name: meta.name || `${title(color)} ${title(kind)}`,
+    name: scarfWording(meta.name || `${title(color)} ${category.productLabel || title(kind)}`),
     category: category.slug,
-    categoryLabel: category.label,
+    categoryLabel: scarfWording(category.label),
     color: title(color),
     priceMinor,
     compareAtMinor,
@@ -74,7 +75,7 @@ export function parseProduct(relative, config) {
     available: meta.available !== false,
     featured: meta.featured === true,
     family: meta.family || null,
-    description: meta.description || category.description,
+    description: scarfWording(meta.description || category.description),
     gallery: meta.images || [],
     firstSeenAt: "",
     images: [],

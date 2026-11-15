@@ -26,7 +26,7 @@ export function Footer() {
           <h2>Explore</h2>
           <Link href="/shop">Shop all</Link>
           <Link href="/collections/hoodies">Hoodies</Link>
-          <Link href="/collections/hijabs">Hijabs & scarves</Link>
+          <Link href="/collections/hijabs">Scarves</Link>
           <Link href="/collections/pants">Pants</Link>
           <Link href="/custom-design">Custom design</Link>
           <Link href="/about">About VERA</Link>

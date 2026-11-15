@@ -8,7 +8,7 @@ export const metadata: Metadata = {
   metadataBase: new URL(brand.siteUrl),
   title: { default: "VERA — Wear Your Identity", template: "%s | VERA" },
   description:
-    "Discover your style with VERA. Explore hoodies, hijabs and everyday pieces in Egypt. Personal ordering through WhatsApp.",
+    "Discover your style with VERA. Explore hoodies, scarves and everyday pieces in Egypt. Personal ordering through WhatsApp.",
   openGraph: {
     type: "website",
     siteName: "VERA",

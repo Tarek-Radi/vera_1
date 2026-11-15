@@ -74,7 +74,7 @@ export const informationPages: Record<
     sections: [
       [
         "A point of view, all your own",
-        "VERA is an Egyptian fashion brand with a simple belief: what you wear should feel like you. Explore hoodies, hijabs and the pieces that fit into your everyday expression.",
+        "VERA is an Egyptian fashion brand with a simple belief: what you wear should feel like you. Explore hoodies, scarves and the pieces that fit into your everyday expression.",
       ],
       [
         "A more personal experience",

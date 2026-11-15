@@ -10,8 +10,8 @@ import config from "../config/catalog.json";
 describe("filename catalog", () => {
   it.each([
     ["black_hoodie_600.jpeg", "Black Hoodie", "hoodies", 60000],
-    ["burgundy_Hijab_250.jpeg", "Burgundy Hijab", "hijabs", 25000],
-    ["white_Hijab_250.jpeg", "White Hijab", "hijabs", 25000],
+    ["burgundy_Hijab_250.jpeg", "Burgundy Scarf", "hijabs", 25000],
+    ["white_Hijab_250.jpeg", "White Scarf", "hijabs", 25000],
   ])("parses %s", (file, name, category, price) => {
     const p = parseProduct(file, config);
     expect(p).toMatchObject({ name, category, priceMinor: price });

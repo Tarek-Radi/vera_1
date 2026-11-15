@@ -91,7 +91,7 @@ test("responsive widths, navigation drawer and catalog controls", async ({
 
       .first()
 
-      .getByRole("link", { name: "Black Hijab", exact: true }),
+      .getByRole("link", { name: "Black Scarf", exact: true }),
   ).toBeVisible();
 });
 
