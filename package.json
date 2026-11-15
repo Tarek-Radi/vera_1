@@ -4,18 +4,59 @@
   "private": true,
   "scripts": {
     "dev": "node scripts/dev.mjs",
-    "build": "next build"
+    "build": "next build",
+    "predev": "node scripts/generate-products.mjs",
+    "prebuild": "node scripts/generate-products.mjs",
+    "start": "next start",
+    "catalog": "node scripts/generate-products.mjs",
+    "coupons:generate": "node scripts/generate-coupons.mjs",
+    "coupons:init": "node --env-file-if-exists=.env.local scripts/generate-coupons.mjs --init",
+    "db:migrate": "node --env-file-if-exists=.env.local scripts/migrate.mjs",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
+    "test": "vitest run",
+    "test:e2e": "playwright test",
+    "coupons:status": "node --env-file-if-exists=.env.local scripts/coupon-status.mjs",
+    "format": "prettier --write .",
+    "build:cloudflare": "node scripts/cloudflare.mjs build",
+    "preview:cloudflare": "node scripts/cloudflare.mjs preview",
+    "check:cloudflare": "node scripts/cloudflare.mjs check",
+    "deploy:cloudflare": "node scripts/cloudflare.mjs deploy",
+    "test:e2e:cloudflare": "playwright test --config playwright.cloudflare.config.ts"
   },
   "dependencies": {
-    "next": "^16.0.0",
+    "@opennextjs/cloudflare": "1.20.17",
+    "@supabase/ssr": "^0.12.7",
+    "@supabase/supabase-js": "^2.119.0",
+    "lucide-react": "^1.73.0",
+    "next": "16.4.5",
+    "postgres": "^4.1.1",
     "react": "^19.2.0",
-    "react-dom": "^19.2.0"
+    "react-dom": "^19.2.0",
+    "server-only": "^0.0.1",
+    "zod": "^4.6.7"
   },
   "devDependencies": {
-    "tailwindcss": "^4.1.0",
+    "@playwright/test": "^1.65.1",
     "@tailwindcss/postcss": "^4.1.0",
-    "typescript": "^5.9.0",
+    "@types/node": "^24.0.0",
     "@types/react": "^19.2.0",
-    "@types/node": "^24.0.0"
+    "@types/react-dom": "^19.3.0",
+    "eslint": "^9.39.5",
+    "eslint-config-next": "^16.4.6",
+    "jsonc-parser": "3.3.1",
+    "prettier": "^3.10.1",
+    "tailwindcss": "^4.1.0",
+    "typescript": "^5.9.0",
+    "vitest": "^5.1.0",
+    "wrangler": "4.162.0"
+  },
+  "overrides": {
+    "@typescript-eslint/typescript-estree": {
+      "minimatch": "^11.0.1"
+    },
+    "@opennextjs/cloudflare": {
+      "glob": "^14.0.6"
+    }
   }
 }

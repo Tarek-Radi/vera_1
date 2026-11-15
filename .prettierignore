@@ -1,0 +1,14 @@
+node_modules
+.next
+out
+private
+.local
+generated
+public
+collection
+package-lock.json
+test-results
+playwright-report
+
+.open-next/
+.wrangler/

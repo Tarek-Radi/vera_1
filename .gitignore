@@ -3,3 +3,17 @@ node_modules/
 out/
 .env*
 *.tsbuildinfo
+!.env.example
+private/
+test-results/
+playwright-report/
+.local/
+coverage/
+public/catalog/
+generated/catalog.json
+
+.open-next/
+.wrangler/
+.dev.vars*
+!.dev.vars.example
+.env.cloudflare*

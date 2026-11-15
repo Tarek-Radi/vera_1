@@ -1,0 +1,32 @@
+{
+  "black_hijab": {
+    "sku": "VER-HIJ-BLA-5E936C6B0D",
+    "slug": "black-hijab-5e936c6b0d",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "black_hoodie": {
+    "sku": "VER-HOD-BLA-E66FB260E2",
+    "slug": "black-hoodie-e66fb260e2",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "burgundy_hijab": {
+    "sku": "VER-HIJ-BUR-9B8DCA7067",
+    "slug": "burgundy-hijab-9b8dca7067",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "burgundy_hoodie": {
+    "sku": "VER-HOD-BUR-FAC9579779",
+    "slug": "burgundy-hoodie-fac9579779",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "gray_hoodie": {
+    "sku": "VER-HOD-GRA-C530BD0696",
+    "slug": "gray-hoodie-c530bd0696",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "white_hijab": {
+    "sku": "VER-HIJ-WHI-EC435704E0",
+    "slug": "white-hijab-ec435704e0",
+    "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  }
+}

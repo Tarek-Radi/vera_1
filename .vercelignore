@@ -1,0 +1,11 @@
+private
+.local
+tests
+test-results
+playwright-report
+out
+.env.local
+
+.open-next
+.wrangler
+.dev.vars*
