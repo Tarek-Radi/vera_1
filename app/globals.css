@@ -1509,16 +1509,6 @@ svg {
   margin: 20px 0 13px;
   font-size: 18px;
 }
-.order-summary:has(.checkout-form) { position: static; }
-.checkout-form { margin-top: 1.5rem; }
-.checkout-form h3 { font-size: 1.25rem; margin-bottom: .7rem; }
-.checkout-form fieldset { border: 0; padding: 0; margin: 1.25rem 0; min-width: 0; display: grid; gap: .9rem; }
-.checkout-form label, .checkout-message { display: grid; gap: .45rem; font-size: .8rem; line-height: 1.5; }
-.checkout-form input, .checkout-message textarea { width: 100%; min-width: 0; box-sizing: border-box; border: 1px solid var(--line); border-radius: 0; padding: .8rem; background: var(--paper, #fff); color: var(--navy); font: inherit; }
-.checkout-form input:focus, .checkout-message textarea:focus { outline: 2px solid var(--blue, #8fbde3); outline-offset: 2px; }
-.checkout-message textarea { white-space: pre-wrap; overflow-wrap: anywhere; resize: vertical; font-size: .9rem; line-height: 1.9; }
-.checkout-long-message { padding: 1rem; background: #e7eff5; line-height: 1.8; }
-.admin-customer { padding: 1rem 0; overflow-wrap: anywhere; }
 .invoice-ready > p {
   font-size: 12px;
   margin-bottom: 18px;

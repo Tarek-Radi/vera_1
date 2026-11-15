@@ -25,23 +25,8 @@ export const lineSchema = z
 export const cartSchema = z
   .object({ items: z.array(lineSchema).min(1).max(20) })
   .strict();
-const plainText = (label: string, min: number, max: number) => z.string()
-  .trim().min(min, `${label} is required.`).max(max, `${label} is too long.`)
-  .refine((value) => !/[\u0000-\u001f\u007f-\u009f\u202a-\u202e\u2066-\u2069]/.test(value), `${label} contains unsupported control characters.`);
-export const customerSchema = z.object({
-  name: plainText("Customer name", 2, 100),
-  phone: plainText("Mobile number", 8, 24)
-    .transform((value) => value.replace(/[٠-٩۰-۹]/g, (digit) => String(digit.charCodeAt(0) % 16)).replace(/[\s().-]/g, ""))
-    .refine((value) => /^(?:01[0125]\d{8}|\+?[1-9]\d{7,14})$/.test(value), "Enter a valid mobile number (Egyptian mobile or international format)."),
-  governorate: plainText("Governorate", 2, 80),
-  area: plainText("City / area", 2, 100),
-  address: plainText("Full shipping address", 8, 350),
-  paymentPreference: plainText("Payment preference", 0, 80).optional().default(""),
-  notes: plainText("Order notes", 0, 600).optional().default(""),
-}).strict();
-export type CheckoutCustomer = z.infer<typeof customerSchema>;
 export const checkoutSchema = cartSchema
-  .extend({ idempotencyKey: z.string().uuid(), customer: customerSchema })
+  .extend({ idempotencyKey: z.string().uuid() })
   .strict();
 export type CartLine = z.infer<typeof lineSchema>;
 export type PricedLine = CartLine & {

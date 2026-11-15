@@ -10,12 +10,10 @@ import {
 export const POST = storeRoute(async function POST(request: Request) {
   try {
     await rateLimit(request, "checkout", 10);
-    const parsed = checkoutSchema.safeParse(
+    const { items, idempotencyKey } = checkoutSchema.parse(
       await requestBody(request),
     );
-    if (!parsed.success) return NextResponse.json({ error: parsed.error.issues[0]?.message || "Please check your checkout details.", code: "VALIDATION" }, { status: 400 });
-    const { items, idempotencyKey, customer } = parsed.data;
-    return NextResponse.json(await checkout(items, idempotencyKey, customer), {
+    return NextResponse.json(await checkout(items, idempotencyKey), {
       headers: { "Cache-Control": "no-store" },
     });
   } catch (e) {
