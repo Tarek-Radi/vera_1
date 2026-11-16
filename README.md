@@ -1,4 +1,4 @@
-# VERA — Wear Your Identity
+# VERA — Wear Your Identity - link: https://vera1-sigma.vercel.app/
 
 ## Temporary database-free checkout (currently enabled)
 
