@@ -2569,6 +2569,12 @@ td small {
 .placement-hotspot:focus-visible { outline:3px solid #85c8ff; }
 .position-list { display:grid; gap:8px; margin:16px 0; }
 .artwork-upload { border:1px solid var(--line); padding:16px; margin:24px 0; min-width:0; }
+/* The native input receives the tap directly, including on mobile Safari. */
+.artwork-picker { position:relative; min-height:48px; padding:12px; border:1px solid var(--line); background:var(--paper); justify-content:center; }
+.artwork-picker input[type=file] { position:absolute; inset:0; width:100%; height:100%; margin:0; padding:0; opacity:0; cursor:pointer; }
+.artwork-picker:focus-within { outline:2px solid var(--blue); outline-offset:2px; }
+.artwork-picker:has(input:disabled) { opacity:.6; }
+.artwork-picker input:disabled { cursor:wait; }
 .artwork-upload legend { font-weight:600; padding:0 4px; }
 .artwork-preview { display:flex; align-items:center; gap:12px; overflow-wrap:anywhere; }
 .artwork-preview img { object-fit:contain; flex-shrink:0; }

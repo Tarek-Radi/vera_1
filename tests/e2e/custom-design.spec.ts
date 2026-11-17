@@ -218,3 +218,41 @@ for (const width of [390, 1280])
       fullPage: true,
     });
   });
+
+
+test("touch artwork controls open the picker and preserve position mapping", async ({ browser }) => {
+  const context = await browser.newContext({ viewport: { width: 390, height: 844 }, hasTouch: true, isMobile: true });
+  const page = await context.newPage();
+  await page.goto("http://127.0.0.1:8790/custom-design");
+  await expect(page.locator(".studio-reference")).toContainText("VERA-CUSTOM-");
+  for (const position of [1, 2]) {
+    await page.getByRole("button", { name: `Position ${position}:`, exact: false }).tap();
+    const input = page.getByLabel(`Upload artwork for position ${position}`, { exact: true });
+    await expect(input).toBeEnabled();
+    await expect(input).toHaveAttribute("id", `artwork-position-${position}`);
+    await expect(input).toHaveAttribute("accept", "image/png,image/jpeg,image/webp");
+    expect(await input.getAttribute("capture")).toBeNull();
+    const label = page.locator(`label[for="artwork-position-${position}"]`);
+    await label.scrollIntoViewIfNeeded();
+    const box = (await label.boundingBox())!;
+    const x = box.x + box.width / 2, y = box.y + box.height / 2;
+    expect(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.id, { x, y })).toBe(`artwork-position-${position}`);
+    const chooserPromise = page.waitForEvent("filechooser");
+    await page.touchscreen.tap(x, y);
+    const chooser = await chooserPromise;
+    await chooser.setFiles({ name: "same.png", mimeType: "image/png", buffer: png });
+    await expect(page.getByAltText(`Artwork for position ${position}`)).toBeVisible();
+  }
+  const replace = page.getByLabel("Replace artwork for position 1", { exact: true });
+  await replace.setInputFiles({ name: "bad.png", mimeType: "image/png", buffer: Buffer.from("invalid") });
+  await expect(page.locator(".artwork-upload").first().getByRole("alert")).toBeVisible();
+  await replace.setInputFiles({ name: "same.png", mimeType: "image/png", buffer: png });
+  await expect(page.locator(".artwork-upload").first().getByRole("alert")).toHaveCount(0);
+  await page.getByRole("button", { name: "Remove position 1", exact: true }).tap();
+  await page.getByRole("button", { name: "Position 1:", exact: false }).tap();
+  await page.getByLabel("Upload artwork for position 1", { exact: true }).setInputFiles({ name: "same.png", mimeType: "image/png", buffer: png });
+  await expect(page.getByAltText("Artwork for position 1")).toBeVisible();
+  await expect(page.getByAltText("Artwork for position 2")).toBeVisible();
+  await expect(page.locator(".studio-feedback")).toHaveCount(0);
+  await context.close();
+});

@@ -321,9 +321,10 @@ function ArtworkUpload({
           </span>
         </div>
       )}
-      <label>
-        {value.artwork ? "Replace" : "Upload"} artwork for position {id}
+      <label className="artwork-picker" htmlFor={`artwork-position-${id}`}>
+        <span>{value.artwork ? "Replace" : "Upload"} artwork for position {id}</span>
         <input
+          id={`artwork-position-${id}`}
           type="file"
           accept="image/png,image/jpeg,image/webp"
           disabled={loading}
