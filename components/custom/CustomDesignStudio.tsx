@@ -326,7 +326,7 @@ function ArtworkUpload({
         <input
           id={`artwork-position-${id}`}
           type="file"
-          accept="image/png,image/jpeg,image/webp"
+          accept="image/*"
           disabled={loading}
           onChange={(e) => {
             void upload(e.target.files?.[0]);

@@ -230,11 +230,12 @@ test("touch artwork controls open the picker and preserve position mapping", asy
     const input = page.getByLabel(`Upload artwork for position ${position}`, { exact: true });
     await expect(input).toBeEnabled();
     await expect(input).toHaveAttribute("id", `artwork-position-${position}`);
-    await expect(input).toHaveAttribute("accept", "image/png,image/jpeg,image/webp");
+    await expect(input).toHaveAttribute("accept", "image/*");
     expect(await input.getAttribute("capture")).toBeNull();
-    const label = page.locator(`label[for="artwork-position-${position}"]`);
-    await label.scrollIntoViewIfNeeded();
-    const box = (await label.boundingBox())!;
+    await expect(input).toHaveCSS("opacity", "1");
+    await expect(input).toHaveCSS("position", "static");
+    await input.scrollIntoViewIfNeeded();
+    const box = (await input.boundingBox())!;
     const x = box.x + box.width / 2, y = box.y + box.height / 2;
     expect(await page.evaluate(({ x, y }) => document.elementFromPoint(x, y)?.id, { x, y })).toBe(`artwork-position-${position}`);
     const chooserPromise = page.waitForEvent("filechooser");
@@ -255,4 +256,14 @@ test("touch artwork controls open the picker and preserve position mapping", asy
   await expect(page.getByAltText("Artwork for position 2")).toBeVisible();
   await expect(page.locator(".studio-feedback")).toHaveCount(0);
   await context.close();
+});
+
+
+test("isolated development picker has no application scripts or styles", async ({ page }) => {
+  await page.goto("/dev/artwork-picker");
+  await expect(page.locator("script, style, link[rel=stylesheet]")).toHaveCount(0);
+  const chooserPromise = page.waitForEvent("filechooser");
+  await page.getByLabel("Choose an image").click();
+  await (await chooserPromise).setFiles({ name: "test.png", mimeType: "image/png", buffer: png });
+  expect(await page.getByLabel("Choose an image").evaluate((input: HTMLInputElement) => input.files?.[0].name)).toBe("test.png");
 });
