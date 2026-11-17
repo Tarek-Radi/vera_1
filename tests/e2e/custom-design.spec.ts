@@ -127,6 +127,8 @@ test("partial failure retains saved results and retry uploads only unfinished ar
   await expect(page.locator(".studio-feedback[role=alert]")).toContainText(
     "Drive upload failed",
   );
+  await expect(page.locator(".studio-summary .studio-feedback[role=alert]")).toBeFocused();
+  await expect(page.locator(".studio-summary .studio-feedback[role=alert]")).toBeInViewport();
   expect(page.url()).toContain("/custom-design");
   await expect(
     page.getByRole("link", { name: "VERA-K7M4-X9Q2-1", exact: true }),

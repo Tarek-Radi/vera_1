@@ -375,6 +375,13 @@ export default function CustomDesignStudio() {
   const urls = useRef(new Set<string>());
   const submitting = useRef(false);
   const mounted = useRef(true);
+  const errorRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    if (error && !busy) {
+      errorRef.current?.scrollIntoView({ block: "center", behavior: "smooth" });
+      errorRef.current?.focus({ preventScroll: true });
+    }
+  }, [error, busy]);
   const summaryRef = useRef<HTMLTextAreaElement>(null);
   useEffect(() => {
     mounted.current = true;
@@ -535,7 +542,12 @@ export default function CustomDesignStudio() {
   }
   async function openWhatsApp() {
     if (submitting.current || uploads > 0) return;
-    if (!validateFields()) return;
+    try {
+      if (!validateFields()) return;
+    } catch (e) {
+      showError(e);
+      return;
+    }
     submitting.current = true;
     setBusy(true);
     setError("");
@@ -573,9 +585,9 @@ export default function CustomDesignStudio() {
         const result = await response.json().catch(() => ({
           error: "Upload service returned an invalid response. Please retry.",
         }));
-        if (!response.ok || result.error)
+        if (!response.ok || result.ok === false || result.error)
           throw new Error(
-            result.error || `Image ${index + 1} upload failed. Please retry.`,
+            (result.error || `Image ${index + 1} upload failed (HTTP ${response.status}). Please retry.`) + (result.correlationId ? ` Reference: ${result.correlationId}.` : ""),
           );
         const item = result.files?.[0];
         if (
@@ -838,6 +850,20 @@ export default function CustomDesignStudio() {
                   )}
                 </button>
 
+        {error && (
+          <div ref={errorRef} tabIndex={-1} className="studio-feedback" role="alert" aria-live="assertive">
+            {error}
+            <button
+              type="button"
+              className="button secondary"
+              disabled={busy || uploads > 0}
+              onClick={() => void openWhatsApp()}
+            >
+              Retry
+            </button>
+          </div>
+        )}
+
                 {busy && (
                   <div role="status">
                     <p>{progress}</p>
@@ -915,19 +941,6 @@ export default function CustomDesignStudio() {
             </div>
           </div>
         </fieldset>
-        {error && (
-          <p className="studio-feedback" role="alert">
-            {error}
-            <button
-              type="button"
-              className="button secondary"
-              disabled={busy || uploads > 0}
-              onClick={() => void openWhatsApp()}
-            >
-              Retry
-            </button>
-          </p>
-        )}
         {notice && (
           <p className="studio-feedback" role="status">
             {notice}

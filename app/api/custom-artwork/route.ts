@@ -7,9 +7,13 @@ import {
 export const runtime = "nodejs";
 export const maxDuration = 60;
 export async function POST(request: Request) {
-  const headers = { "Cache-Control": "no-store" };
-  const fail = (error: string, status = 400) =>
-    Response.json({ error }, { status, headers });
+  const correlationId = crypto.randomUUID();
+  let stage = "configuration";
+  const headers = { "Cache-Control": "no-store", "X-Artwork-Request-Id": correlationId };
+  const fail = (error: string, status = 400) => {
+    console.error("artwork_upload", { correlationId, stage, status });
+    return Response.json({ error, correlationId }, { status, headers });
+  };
   try {
     const endpoint = process.env.ARTWORK_SCRIPT_URL,
       secret = process.env.ARTWORK_SCRIPT_SECRET;
@@ -32,10 +36,12 @@ export async function POST(request: Request) {
         "Artwork upload configuration is invalid. Contact VERA.",
         503,
       );
+    stage = "origin";
     if (request.headers.get("origin") !== expected)
       return fail("Submit artwork from the VERA website.", 403);
     if (!request.headers.get("content-type")?.includes("application/json"))
       return fail("Expected JSON.", 415);
+    stage = "request_validation";
     const configured = Number(process.env.ARTWORK_MAX_BYTES || 1048576);
     const maxBytes = Math.min(
       2 * 1024 * 1024,
@@ -75,6 +81,7 @@ export async function POST(request: Request) {
       .safeParse(JSON.parse(Buffer.concat(chunks).toString("utf8")));
     if (!parsed.success)
       return fail("Check artwork and position. Upload one image per request.");
+    stage = "image_validation";
     // Reject the entire batch before creating any files when validation fails.
     try {
       let total = 0;
@@ -88,6 +95,8 @@ export async function POST(request: Request) {
     } catch (error) {
       return fail(error instanceof Error ? error.message : "Invalid artwork.");
     }
+    stage = "apps_script";
+    console.info("artwork_upload", { correlationId, stage });
     const files = [];
     const deadline = AbortSignal.timeout(45000);
     for (const artwork of parsed.data.artwork)
@@ -99,7 +108,8 @@ export async function POST(request: Request) {
           { endpoint, secret, maxBytes, signal: deadline },
         )),
       });
-    return Response.json({ files }, { headers });
+    console.info("artwork_upload", { correlationId, stage: "saved", status: 200 });
+    return Response.json({ files, correlationId }, { headers });
   } catch (error) {
     return fail(
       error instanceof Error &&
