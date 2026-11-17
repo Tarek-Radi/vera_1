@@ -1,4 +1,9 @@
-# VERA — Wear Your Identity - link: https://vera1-sigma.vercel.app/
+# VERA — Wear Your Identity
+
+Project: https://vera1-sigma.vercel.app/
+
+> Current hosting: **Vercel**. Use the Next.js preset and `npm run build`. See [Vercel artwork setup](docs/ARTWORK-DRIVE-SETUP.md) for required environment variables. Cloudflare Workers/OpenNext instructions below are historical alternatives, not this deployment’s runtime.
+
 
 ## Temporary database-free checkout (currently enabled)
 
@@ -10,7 +15,7 @@
 - Destination remains `storeWhatsApp` in `config/brand.ts`: `201009785343`. Missing/invalid numbers fail validation; no alternative is invented.
 - Once ready to publish later, confirm the existing Worker identity and HTTPS origins, then use `npm run deploy:cloudflare`. In WhatsApp mode it no longer requires Supabase public settings or database/coupon secrets. Nothing was deployed during this task.
 
-The server validates customer details, catalog availability, quantity and size, and uses the real catalog selling price (including existing sale pricing). Browser prices/totals/shipping fees/customization charges are rejected. Shipping has no configured tariff and is clearly additional, “يُحدد بعد التأكيد”. Coupons, reservations and redemptions are disabled; coupon controls disappear and manually submitted codes are rejected. Old browser cart coupon selections are removed when loading this mode. Custom design is still Coming Soon: there are no priced custom-print products/upload references; unpriced custom fields are rejected rather than invented.
+The server validates customer details, catalog availability, quantity and size, and uses the real catalog selling price (including existing sale pricing). Browser prices/totals/shipping fees/customization charges are rejected. Shipping has no configured tariff and is clearly additional, “يُحدد بعد التأكيد”. Coupons, reservations and redemptions are disabled; coupon controls disappear and manually submitted codes are rejected. Old browser cart coupon selections are removed when loading this mode. Custom hoodie requests use the separate VERA Studio flow described below, with private Drive artwork uploads and prices confirmed on WhatsApp. The regular cart still rejects unsupported custom fields.
 
 Orders are followed up **through WhatsApp only**. No order row, reference, central history or delivery confirmation is created. Admin order APIs and owner login are unavailable without exposing existing records or weakening authentication. Opening the chat never marks anything sent, confirmed or paid. The browser keeps the cart/customer draft for recovery; this is not a production order database. The customer must press Send in WhatsApp. Oversized messages retain the complete summary for copy/paste instead of silently dropping products.
 
@@ -297,3 +302,12 @@ For Cloudflare production, first confirm the existing Worker name/account in `wr
 Alternatively, after confirming the correct Worker, run `npx wrangler secret put DATABASE_URL` and `npx wrangler secret put COUPON_HMAC_SECRET`, entering values interactively. These are remote changes for the owner to perform later; this task did not upload secrets or deploy. Public Supabase URL/key settings are additionally needed for owner authentication, not for the ordinary database-backed WhatsApp checkout.
 
 The destination is already configured as `201009785343` in `config/brand.ts` (`storeWhatsApp`). No replacement number is required. Once storage is configured, the existing final button saves/reuses the validated order and navigates directly to the prefilled Arabic message in the same tab. Customers press Send only inside WhatsApp. Cart/details remain recoverable on errors; failed quote validation now offers **Retry validation**.
+
+
+## Custom Your Design — sequential Drive uploads
+
+The custom hoodie flow is separate from the cart and requires no database or Turnstile. It uploads images sequentially with a waiting spinner and image counter, retains each saved result for retries, and opens WhatsApp in the same tab only after all files are confirmed. The message contains real Drive links and image codes. The customer still presses Send.
+
+[Required Vercel and Google Apps Script setup](docs/ARTWORK-DRIVE-SETUP.md): configure `ARTWORK_SCRIPT_URL`, `ARTWORK_SCRIPT_SECRET`, `SITE_URL`, and `ARTWORK_MAX_BYTES`. The destination is `1IS01GtI2kiI5LFOVb1IaO_pAkfZFx1iT`. Use `npm run build` for Vercel. No Turnstile keys are needed.
+
+Tests mock Google responses; live uploads require the owner’s Google authorization and configuration. No deployment is automatic.

@@ -9,3 +9,9 @@ COUPON_HMAC_SECRET=""
 SITE_URL="http://127.0.0.1:8787"
 # Keep public values in wrangler.jsonc vars consistent with the Cloudflare build.
 # Supabase URL and publishable/anon key go there; never a service-role key.
+
+# Custom artwork uploads: server-only. No Turnstile or database keys required.
+ARTWORK_SCRIPT_URL=
+ARTWORK_SCRIPT_SECRET=
+# Match the Apps Script property; default 1 MiB per file (maximum 2 MiB).
+ARTWORK_MAX_BYTES=1048576

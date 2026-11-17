@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "target": "ES2017",
-    "lib": ["dom", "dom.iterable", "esnext"],
+    "lib": [
+      "dom",
+      "dom.iterable",
+      "esnext"
+    ],
     "allowJs": true,
     "skipLibCheck": true,
     "strict": true,
@@ -25,7 +29,14 @@
     ".next/dev/types/**/*.ts",
     "**/*.mts",
     "**/*.ts",
-    "**/*.tsx"
+    "**/*.tsx",
+    ".local/custom-next/types/**/*.ts",
+    ".local/custom-next/dev/types/**/*.ts"
   ],
-  "exclude": ["node_modules", ".open-next", ".wrangler", ".local"]
+  "exclude": [
+    "node_modules",
+    ".open-next",
+    ".wrangler",
+    ".local"
+  ]
 }

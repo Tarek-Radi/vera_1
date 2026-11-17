@@ -1,5 +1,9 @@
 import type { NextConfig } from "next";
 const config: NextConfig = {
+  // Isolate custom-flow browser tests from an already running storefront dev server.
+  ...(process.env.VERA_CUSTOM_TEST === "1"
+    ? { distDir: ".local/custom-next" }
+    : {}),
   poweredByHeader: false,
   outputFileTracingExcludes: {
     "*": [

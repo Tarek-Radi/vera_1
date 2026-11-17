@@ -24,12 +24,15 @@
     "deploy:cloudflare": "node scripts/cloudflare.mjs deploy",
     "test:e2e:cloudflare": "playwright test --config playwright.cloudflare.config.ts",
     "checkout:check": "node scripts/check-checkout.mjs",
-    "test:e2e:whatsapp": "playwright test --config playwright.whatsapp.config.ts"
+    "test:e2e:whatsapp": "playwright test --config playwright.whatsapp.config.ts",
+    "test:e2e:custom": "playwright test --config playwright.custom.config.ts"
   },
   "dependencies": {
     "@opennextjs/cloudflare": "1.20.17",
     "@supabase/ssr": "^0.12.7",
     "@supabase/supabase-js": "^2.119.0",
+    "fflate": "^0.8.3",
+    "image-size": "^2.1.0",
     "lucide-react": "^1.73.0",
     "next": "16.4.5",
     "postgres": "^4.1.1",

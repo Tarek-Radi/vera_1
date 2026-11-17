@@ -205,13 +205,13 @@ export default function Home() {
       <section className="custom-teaser">
         <div>
           <span className="coming-pill">A NEW WAY TO EXPRESS YOURSELF</span>
-          <p className="eyebrow">VERA STUDIO / COMING SOON</p>
+          <p className="eyebrow">VERA STUDIO / MAKE IT YOURS</p>
           <h2>
             YOUR STYLE.
             <br />
             YOUR CANVAS.
           </h2>
-          <p>Something personal is taking shape.</p>
+          <p>Choose your hoodie, place your artwork and create a personal request.</p>
           <Link href="/custom-design" className="button light">
             Design your own VERA <ArrowUpRight size={17} />
           </Link>

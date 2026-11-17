@@ -8,12 +8,15 @@ if (existsSync(file)) loadEnvFile(file);
 console.log(
   `Checking ${workers ? "local Workers preview" : "local Next.js"} checkout configuration (${file}). Secret values are never printed.`,
 );
-const mode = (workers ? (await readCloudflareConfig()).vars?.NEXT_PUBLIC_CHECKOUT_MODE : process.env.NEXT_PUBLIC_CHECKOUT_MODE) || "whatsapp";
+const mode =
+  (workers
+    ? (await readCloudflareConfig()).vars?.NEXT_PUBLIC_CHECKOUT_MODE
+    : process.env.NEXT_PUBLIC_CHECKOUT_MODE) || "whatsapp";
 if (!["whatsapp", "database"].includes(mode))
   throw new Error("Invalid NEXT_PUBLIC_CHECKOUT_MODE");
 const source = readFileSync("config/brand.ts", "utf8");
 const destination = source
-  .match(/normalizeWhatsAppNumber\("([^"]*)"\)/)?.[1]
+  .match(/const storeWhatsApp\s*=\s*"([^"]*)"/)?.[1]
   ?.replace(/[+\s().-]/g, "");
 if (!destination || !/^[1-9]\d{7,14}$/.test(destination)) {
   console.error(

@@ -57,7 +57,7 @@ export const faqs = [
   ],
   [
     "Can I customise my hoodie?",
-    "VERA Studio is coming soon. The custom-design editor and artwork uploads are not available in this release.",
+    "Yes. VERA Studio lets you select hoodie variants and print positions, then prepare a separate custom request for WhatsApp. Artwork uploads privately to VERA’s Google Drive before WhatsApp opens. The message includes artwork codes and links for authorized store staff; you still press Send in WhatsApp. Prices and shipping are confirmed on WhatsApp.",
   ],
   [
     "Does VERA have physical stores?",
@@ -199,6 +199,10 @@ export const informationPages: Record<
       [
         "Order records",
         databaseFreeCheckout ? "WhatsApp-only checkout does not store order or customer records on our server. Your cart and customer draft remain in your browser for recovery. The complete summary goes to WhatsApp when you open the chat; you must press Send. We cannot verify message delivery or offer a central order history in this mode." : "When you request an invoice, we store its order number, selected product information, prices, discounts, order status and timestamps in our PostgreSQL database. Coupon codes are verified using keyed hashes; order records use masked coupon labels. Checkout also stores your name, phone, governorate, city/area, full address, optional payment preference and notes. No card or bank account credentials are collected. These details are visible only through protected owner access.",
+      ],
+      [
+        "Custom artwork",
+        "Submitting a custom hoodie request uploads artwork through our server to VERA’s private Google Drive. We store the artwork, request reference, image codes and retry metadata there for follow-up. Customer contact and address fields are not sent to Drive by the upload service. Files and form details remain in the open browser tab, but refreshing loses that draft. Contact VERA for access or deletion requests. Uploading or opening WhatsApp does not confirm an order or message delivery.",
       ],
       [
         "WhatsApp and Instagram",
