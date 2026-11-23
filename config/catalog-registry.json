@@ -53,5 +53,10 @@
     "sku": "VER-SWT-LIG-595D1E46C7",
     "slug": "light-grey-sweatpants-595d1e46c7",
     "firstSeenAt": "2026-11-23T04:34:57.921Z"
+  },
+  "white_hoodie": {
+    "sku": "VER-HOD-WHI-BE3B1335AB",
+    "slug": "white-hoodie-be3b1335ab",
+    "firstSeenAt": "2026-11-23T05:23:26.908Z"
   }
 }

@@ -97,6 +97,10 @@
       "compareAtPrice": 650,
       "referencePriceApproved": true,
       "id": "dark-grey_sweatpants"
+    },
+    "white_hoodie": {
+      "family": "signature-hoodie",
+      "description": "A premium everyday hoodie featuring a clean white finish, a relaxed fit, soft fabric, a spacious hood, and a classic kangaroo pocket. Designed for effortless comfort and modern streetwear styling."
     }
   },
   "promotionalImages": [
@@ -108,6 +112,7 @@
     "VERA Gray Sweatpants Studio Display.png": "light-grey_pants_600.png",
     "Dark Brown VERA Sweatpants Showcase.png": "brown_pants_600.png",
     "Navy VERA Sweatpants Studio Display.png": "navy_pants_600.png",
-    "Charcoal VERA Sweatpants Display.png": "dark-grey_pants_600.png"
+    "Charcoal VERA Sweatpants Display.png": "dark-grey_pants_600.png",
+    "white_hoodie.png": "white_hoodie_600.png"
   }
 }

@@ -13,5 +13,14 @@ it("uses sale prices for all hoodies and five pants through checkout", () => {
   }
   const lines = validateLines(affected.map(p => ({ sku:p.sku, size:p.sizes[0], quantity:2 })));
   expect(lines.every(l => l.unitPrice === 60000 && l.lineTotal === 120000)).toBe(true);
-  expect(totals(lines).totalBeforeShipping).toBe(affected.length * 120000 - 120000);
+  expect(totals(lines).totalBeforeShipping).toBe(affected.length * 120000 - Math.min(pants.length, affected.length - pants.length) * 2 * 20000);
+});
+
+it.each([[1,0,600],[1,1,1000],[1,2,1600],[2,2,2000]])("White Hoodie bundle %s/%s",(hoodies,pants,total)=>{
+ const matches=products.filter(p=>p.name === "White Hoodie");
+ expect(matches).toHaveLength(1);
+ const white=matches[0], pant=products.find(p=>p.category === "pants")!;
+ expect(white.category).toBe("hoodies");
+ const items=[{sku:white.sku,size:white.sizes[0],quantity:hoodies},{sku:pant.sku,size:pant.sizes[0],quantity:pants}].filter(x=>x.quantity);
+ expect(totals(validateLines(items)).totalBeforeShipping).toBe(total*100);
 });
