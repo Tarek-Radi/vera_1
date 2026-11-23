@@ -36,7 +36,7 @@ export default async function Collection({
         </h1>
         <p>
           {category === "pants"
-            ? "The next chapter is taking shape."
+            ? "Everyday sweatpants. Find your colour and complete your look."
             : "Considered colours. An expression of you."}
         </p>
       </header>

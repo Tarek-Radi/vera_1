@@ -34,13 +34,15 @@
         "XL",
         "XXL"
       ],
-      "description": "Complete your look with VERA. Confirm fit and product details with us before ordering."
+      "description": "Complete your look with VERA. Confirm fit and product details with us before ordering.",
+      "productLabel": "Sweatpants"
     }
   },
   "pricing": {
     "hoodies": {
-      "suggestedCompareAtOffset": 50,
-      "referencePriceApproved": false
+      "sellingPrice": 600,
+      "compareAtPrice": 650,
+      "referencePriceApproved": true
     }
   },
   "products": {
@@ -65,9 +67,47 @@
     },
     "white_hijab": {
       "family": "essential-scarf"
+    },
+    "black_pants": {
+      "family": "vera-sweatpants",
+      "compareAtPrice": 650,
+      "referencePriceApproved": true,
+      "id": "black_sweatpants"
+    },
+    "light-grey_pants": {
+      "family": "vera-sweatpants",
+      "compareAtPrice": 650,
+      "referencePriceApproved": true,
+      "id": "light-grey_sweatpants"
+    },
+    "brown_pants": {
+      "family": "vera-sweatpants",
+      "compareAtPrice": 650,
+      "referencePriceApproved": true,
+      "id": "brown_sweatpants"
+    },
+    "navy_pants": {
+      "family": "vera-sweatpants",
+      "compareAtPrice": 650,
+      "referencePriceApproved": true,
+      "id": "navy_sweatpants"
+    },
+    "dark-grey_pants": {
+      "family": "vera-sweatpants",
+      "compareAtPrice": 650,
+      "referencePriceApproved": true,
+      "id": "dark-grey_sweatpants"
     }
   },
   "promotionalImages": [
-    "some-Hoodies.jpeg"
-  ]
+    "some-Hoodies.jpeg",
+    "Vera Navy Hoodie and Sweatpants Set.png"
+  ],
+  "sourceAliases": {
+    "VERA Black Joggers Display.png": "black_pants_600.png",
+    "VERA Gray Sweatpants Studio Display.png": "light-grey_pants_600.png",
+    "Dark Brown VERA Sweatpants Showcase.png": "brown_pants_600.png",
+    "Navy VERA Sweatpants Studio Display.png": "navy_pants_600.png",
+    "Charcoal VERA Sweatpants Display.png": "dark-grey_pants_600.png"
+  }
 }

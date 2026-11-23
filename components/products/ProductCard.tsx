@@ -23,7 +23,7 @@ export function ProductCard({ product }: { product: Product }) {
           sizes="(max-width: 640px) 50vw, (max-width: 1000px) 33vw, 25vw"
         />
         <span className="product-tag">
-          {product.available ? product.categoryLabel : "Unavailable"}
+          {product.available ? (product.compareAtMinor ? "SALE" : product.categoryLabel) : "Unavailable"}
         </span>
         <span className="quick-view">
           Choose your size <Plus size={17} />

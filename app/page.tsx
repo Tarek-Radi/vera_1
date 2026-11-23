@@ -9,14 +9,20 @@ import {
 } from "lucide-react";
 import { Intro } from "../components/Intro";
 import { ProductCard } from "../components/products/ProductCard";
-import { products, promotionalImage } from "../lib/catalog";
+import { products, promotionalImage, bundleImage } from "../lib/catalog";
 import { brand } from "../config/brand";
 export const metadata = { alternates: { canonical: "/" } };
 export default function Home() {
   const arrivals = [...products]
     .sort((a, b) => b.firstSeenAt.localeCompare(a.firstSeenAt))
     .slice(0, 4);
-  const featured = products.filter((p) => p.featured).slice(0, 4);
+  const featuredPants = ["Light Grey", "Black", "Navy"].flatMap((color) =>
+    products.filter((p) => p.category === "pants" && p.color === color),
+  );
+  const featured = [
+    ...products.filter((p) => p.featured).slice(0, 4),
+    ...featuredPants,
+  ].filter((p, index, items) => items.findIndex((item) => item.sku === p.sku) === index);
   return (
     <>
       <Intro />
@@ -120,19 +126,41 @@ export default function Home() {
           </Link>
           <Link
             href="/collections/pants"
-            className="collection-card collection-coming"
+            className="collection-card"
           >
-            <span className="outline-word" aria-hidden="true">
-              VERA
-            </span>
-            <span className="coming-pill">COMING SOON</span>
+            <Image
+              src={products.find((p) => p.category === "pants" && p.color === "Light Grey")!.images[0]}
+              alt="Light Grey VERA sweatpants from the Pants collection"
+              fill
+              sizes="(max-width: 640px) 100vw, 35vw"
+            />
             <div>
-              <span>03 / THE NEXT CHAPTER</span>
+              <span>03 / EVERYDAY COMFORT</span>
               <h3>
                 Pants <ArrowUpRight />
               </h3>
             </div>
           </Link>
+        </div>
+      </section>
+      <section className="bundle-campaign" aria-labelledby="bundle-heading">
+        <header className="bundle-copy">
+          <p className="eyebrow">THE PERFECT MATCH</p>
+          <h2 id="bundle-heading">Any Hoodie + Any Pants <span>— 1,000 EGP</span></h2>
+          <p className="bundle-value"><del>1,200 EGP</del><span>Save 200 EGP per pair</span></p>
+          <p className="bundle-note">Automatically applied in your bag.</p>
+        </header>
+        <div className="bundle-stage">
+        <Link href="/shop" className="bundle-banner" aria-label="Shop the Bundle: any hoodie and pants for 1,000 EGP">
+          <Image src={bundleImage} alt="Navy VERA hoodie and sweatpants bundle" width={1671} height={941} sizes="100vw" />
+          <span className="bundle-comparison"><del>1,200 EGP</del></span>
+        </Link>
+        <div className="bundle-reflection" aria-hidden="true">
+          <Image src={bundleImage} alt="" width={1671} height={941} sizes="100vw" />
+        </div>
+        </div>
+        <div className="bundle-footer">
+          <Link href="/shop" className="button bundle-cta">Shop the Bundle <ArrowUpRight size={18} aria-hidden="true" /></Link>
         </div>
       </section>
       {arrivals.length > 0 && (

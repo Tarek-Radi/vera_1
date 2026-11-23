@@ -28,5 +28,30 @@
     "sku": "VER-HIJ-WHI-EC435704E0",
     "slug": "white-hijab-ec435704e0",
     "firstSeenAt": "2026-11-14T23:21:55.834Z"
+  },
+  "dark-grey_sweatpants": {
+    "sku": "VER-SWT-DAR-A36CE73DC4",
+    "slug": "dark-grey-sweatpants-a36ce73dc4",
+    "firstSeenAt": "2026-11-23T04:34:57.921Z"
+  },
+  "brown_sweatpants": {
+    "sku": "VER-SWT-BRO-D5B19099DD",
+    "slug": "brown-sweatpants-d5b19099dd",
+    "firstSeenAt": "2026-11-23T04:34:57.921Z"
+  },
+  "navy_sweatpants": {
+    "sku": "VER-SWT-NAV-F5A2730E9F",
+    "slug": "navy-sweatpants-f5a2730e9f",
+    "firstSeenAt": "2026-11-23T04:34:57.921Z"
+  },
+  "black_sweatpants": {
+    "sku": "VER-SWT-BLA-3DCD429795",
+    "slug": "black-sweatpants-3dcd429795",
+    "firstSeenAt": "2026-11-23T04:34:57.921Z"
+  },
+  "light-grey_sweatpants": {
+    "sku": "VER-SWT-LIG-595D1E46C7",
+    "slug": "light-grey-sweatpants-595d1e46c7",
+    "firstSeenAt": "2026-11-23T04:34:57.921Z"
   }
 }

@@ -13,6 +13,8 @@ export type OrderInvoice = {
   totalBeforeShipping: number;
   shippingCharge?: number | null;
   expiresAt: string;
+  bundleDiscount?: number;
+  bundleCount?: number;
 };
 const egp = (n: number) =>
   `${new Intl.NumberFormat("en-EG", { maximumFractionDigits: 2 }).format(n / 100)} ج.م`;
@@ -53,7 +55,8 @@ export function invoiceText(o: OrderInvoice) {
     "",
     "ملخص الحساب:",
     `قيمة المنتجات: ${egp(o.subtotal)}`,
-    ...(o.discountTotal ? [`إجمالي الخصم: ${egp(o.discountTotal)}`] : []),
+    ...(o.bundleDiscount ? [`Hoodie + Pants Bundle Discount (${o.bundleCount}): -${egp(o.bundleDiscount)}`] : []),
+    ...(o.discountTotal && !o.bundleDiscount ? [`إجمالي الخصم (عرض أو كوبون): ${egp(o.discountTotal)}`] : []),
     `الشحن: ${o.shippingCharge == null ? "يُحدد بعد التأكيد" : egp(o.shippingCharge)}`,
     o.shippingCharge == null
       ? `المبلغ المعروف قبل الشحن: ${egp(o.totalBeforeShipping)} — الشحن إضافي`

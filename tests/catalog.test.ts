@@ -38,8 +38,10 @@ describe("filename catalog", () => {
     ).toBeNull();
   });
   it("requires approval before showing a reference price", () => {
+    const unapproved = structuredClone(config);
+    unapproved.pricing.hoodies.referencePriceApproved = false;
     expect(
-      parseProduct("black_hoodie_600.jpg", config)?.compareAtMinor,
+      parseProduct("black_hoodie_600.jpg", unapproved)?.compareAtMinor,
     ).toBeNull();
     const approved = structuredClone(config);
     approved.pricing.hoodies.referencePriceApproved = true;
@@ -79,7 +81,7 @@ describe("filename catalog", () => {
         sku: first.products[0].sku,
         slug: first.products[0].slug,
         firstSeenAt: first.products[0].firstSeenAt,
-        priceMinor: 70000,
+        priceMinor: 60000,
       });
       expect(
         JSON.parse(

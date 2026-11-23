@@ -43,12 +43,14 @@ export function parseProduct(relative, config) {
   const approved =
     meta.referencePriceApproved ?? pricing.referencePriceApproved;
   const suggested =
-    meta.compareAtPrice ??
+    meta.compareAtPrice ?? pricing.compareAtPrice ??
     priceMinor / 100 + (pricing.suggestedCompareAtOffset || 0);
+  const sellingMinor = pricing.sellingPrice == null ? priceMinor : Math.round(pricing.sellingPrice * 100);
+  if (!Number.isSafeInteger(sellingMinor) || sellingMinor <= 0) throw new Error("Invalid selling price");
   const compareAtMinor =
     approved === true &&
     Number.isFinite(suggested) &&
-    suggested * 100 > priceMinor
+    suggested * 100 > sellingMinor
       ? Math.round(suggested * 100)
       : null;
   const sizes = meta.sizes || category.sizes;
@@ -69,7 +71,7 @@ export function parseProduct(relative, config) {
     category: category.slug,
     categoryLabel: scarfWording(category.label),
     color: title(color),
-    priceMinor,
+    priceMinor: sellingMinor,
     compareAtMinor,
     sizes,
     available: meta.available !== false,
@@ -145,7 +147,7 @@ export async function generateCatalog(root, now = new Date().toISOString()) {
       continue;
     }
     if (galleryFiles.has(file)) continue;
-    const product = parseProduct(file, config);
+    const product = parseProduct(config.sourceAliases?.[file] || file, config);
     if (!product) {
       warnings.push(`Skipped ${file}: expected color_productType_price image.`);
       continue;

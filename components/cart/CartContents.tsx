@@ -1,4 +1,5 @@
 "use client";
+import { bundleOffer } from "../../lib/orders/validation";
 import { databaseFreeCheckout } from "../../config/checkout";
 import Image from "next/image";
 import Link from "next/link";
@@ -58,7 +59,7 @@ export function CartContents({
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ items: JSON.parse(snapshot) }),
-          signal: controller.signal,
+          signal: AbortSignal.any([controller.signal, AbortSignal.timeout(20000)]),
         });
         const data = await response.json();
         if (!response.ok) throw new Error(data.error);
@@ -94,6 +95,7 @@ export function CartContents({
         </Link>
       </div>
     );
+  const offer = bundleOffer(cart.items);
   const subtotal = cart.items.reduce(
     (n, item) => n + (productBySku(item.sku)?.priceMinor || 0) * item.quantity,
     0,
@@ -132,7 +134,7 @@ export function CartContents({
                   </button>
                 </div>
                 <p className="muted">
-                  {p.color} · {money(p.priceMinor)} each
+                  {p.color} Â· {money(p.priceMinor)} each
                 </p>
                 <small className="sku">{p.sku}</small>
                 <div className="line-controls">
@@ -185,7 +187,7 @@ export function CartContents({
                 )}
                 {priced?.discountPercent ? (
                   <p className="success">
-                    {priced.discountPercent}% coupon · Saved{" "}
+                    {priced.discountPercent}% coupon Â· Saved{" "}
                     {money(priced.discountAmount)}
                   </p>
                 ) : null}
@@ -211,18 +213,18 @@ export function CartContents({
           </div>
           <div>
             <dt>
-              {databaseFreeCheckout
+              {offer.bundleCount ? `Hoodie + Pants Offer (${offer.bundleCount} sets)` : databaseFreeCheckout
                 ? "Coupon codes unavailable"
                 : "Coupon discount"}
             </dt>
             <dd>
               {loading
-                ? "Checking…"
+                ? "Checkingâ€¦"
                 : quote
-                  ? `−${money(quote.discountTotal)}`
+                  ? `âˆ’${money(quote.discountTotal)}`
                   : canResume
                     ? "Reopen invoice to confirm"
-                    : "Awaiting validation"}
+                    : error ? "Validation failed — retry below" : "Validating your order..."}
             </dd>
           </div>
           <div className="shipping-row">
@@ -231,7 +233,7 @@ export function CartContents({
           </div>
           <div className="total">
             <dt>Total before shipping</dt>
-            <dd>{money(quote?.totalBeforeShipping ?? subtotal)}</dd>
+            <dd>{money(quote?.totalBeforeShipping ?? Math.max(0, subtotal - offer.bundleDiscount))}</dd>
           </div>
         </dl>
         {error && (
@@ -334,7 +336,7 @@ function LineCoupon({
               update("");
             }}
           >
-            ×
+            Ã—
           </button>
         )}
       </div>

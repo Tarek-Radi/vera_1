@@ -26,6 +26,9 @@ export const productBySku = (sku: string) =>
 export const money = (minor: number) =>
   `${new Intl.NumberFormat("en-EG", { maximumFractionDigits: 2 }).format(minor / 100)} EGP`;
 export const colorHex: Record<string, string> = {
+  "Light Grey": "#b8b8b8",
+  "Dark Grey": "#454545",
+  Brown: "#584035",
   Black: "#1c2026",
   Burgundy: "#662535",
   Gray: "#929ba3",
@@ -33,3 +36,5 @@ export const colorHex: Record<string, string> = {
   Navy: "#172b4b",
   Blue: "#8fbde3",
 };
+
+export const bundleImage = catalog.promotions[catalog.promotions.length - 1];

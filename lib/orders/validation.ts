@@ -47,6 +47,8 @@ export function validateLines(
   const codes = new Set<string>(),
     keys = new Set<string>();
   let orderSubtotal = 0;
+  if (bundleOffer(items).bundleCount && items.some(item => item.coupon))
+    throw new StoreError("The Hoodie + Pants offer cannot be combined with coupons. Remove the coupon to use the offer.");
   return items.map((item) => {
     const p = find(item.sku);
     if (!p || !p.available)
@@ -94,8 +96,21 @@ export function applyDiscount(line: PricedLine, percent: number): PricedLine {
     couponLabel: line.coupon ? `••••${line.coupon.slice(-4)}` : undefined,
   };
 }
-export const totals = (items: PricedLine[]) => ({
-  subtotal: items.reduce((n, x) => n + x.subtotal, 0),
-  discountTotal: items.reduce((n, x) => n + x.discountAmount, 0),
-  totalBeforeShipping: items.reduce((n, x) => n + x.lineTotal, 0),
-});
+export function bundleOffer(items: Pick<CartLine, "sku" | "quantity">[]) {
+  let hoodies = 0, pants = 0;
+  for (const item of items) {
+    const category = productBySku(item.sku)?.category;
+    if (category === "hoodies") hoodies += item.quantity;
+    if (category === "pants") pants += item.quantity;
+  }
+  const bundleCount = Math.max(0, Math.min(hoodies, pants));
+  return { bundleCount, bundleDiscount: bundleCount * 20000 };
+}
+export const totals = (items: PricedLine[]) => {
+  const subtotal = items.reduce((n, x) => n + x.subtotal, 0);
+  const couponDiscount = items.reduce((n, x) => n + x.discountAmount, 0);
+  const offer = bundleOffer(items);
+  if (offer.bundleCount && couponDiscount) throw new StoreError("Bundle and coupon discounts cannot be combined.");
+  return { subtotal, ...offer, discountTotal: couponDiscount + offer.bundleDiscount,
+    totalBeforeShipping: Math.max(0, subtotal - couponDiscount - offer.bundleDiscount) };
+};

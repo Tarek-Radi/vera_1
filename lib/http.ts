@@ -11,11 +11,24 @@ export async function requestBody(request: Request) {
   const expected = new URL(
     process.env.SITE_URL || process.env.NEXT_PUBLIC_SITE_URL || request.url,
   ).origin;
-  if (origin && origin !== expected && origin !== new URL(request.url).origin)
+  const requestUrl = new URL(request.url);
+  const host = request.headers.get("host");
+  // Host identifies this request's destination; do not trust forwarded-host.
+  const publicUrl = new URL(request.url);
+  if (host && /^[a-z0-9.:[\]-]+$/i.test(host)) publicUrl.host = host;
+  const allowed = new Set([expected, requestUrl.origin, publicUrl.origin]);
+  if (process.env.VERCEL === "1") {
+    for (const hostname of [process.env.VERCEL_URL, process.env.VERCEL_PROJECT_PRODUCTION_URL])
+      if (hostname && /^[a-z0-9.-]+$/i.test(hostname)) allowed.add(`https://${hostname}`);
+  }
+  if (!origin || !allowed.has(origin)) {
+    const reference = crypto.randomUUID();
+    console.warn("checkout_origin_rejected", { reference, origin, expected, requestOrigin: requestUrl.origin, host });
     throw new StoreError(
-      "Please submit this request from the VERA website.",
-      403,
+      `We could not verify this page. Reopen the store and retry. Your bag is kept. Reference: ${reference}`,
+      403, "ORIGIN_MISMATCH",
     );
+  }
   if (!request.headers.get("content-type")?.includes("application/json"))
     throw new StoreError("Expected a JSON request.", 415);
   if (Number(request.headers.get("content-length") || 0) > 16000)

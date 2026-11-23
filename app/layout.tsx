@@ -1,3 +1,4 @@
+import { Motion } from "../components/Motion";
 import type { Metadata } from "next";
 import "./globals.css";
 import { CartProvider } from "../components/cart/CartProvider";
@@ -35,6 +36,7 @@ export default function RootLayout({
             Skip to content
           </a>
           <Header />
+          <Motion />
           <main id="main">{children}</main>
           <Footer />
         </CartProvider>
