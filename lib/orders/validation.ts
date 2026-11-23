@@ -99,7 +99,9 @@ export function applyDiscount(line: PricedLine, percent: number): PricedLine {
 export function bundleOffer(items: Pick<CartLine, "sku" | "quantity">[]) {
   let hoodies = 0, pants = 0;
   for (const item of items) {
-    const category = productBySku(item.sku)?.category;
+    const product = productBySku(item.sku);
+    if (!product?.available) continue;
+    const category = product.category;
     if (category === "hoodies") hoodies += item.quantity;
     if (category === "pants") pants += item.quantity;
   }

@@ -2615,3 +2615,5 @@ td small {
 /* One spacing owner between the campaign CTA and the arrivals heading. */
 .bundle-campaign + .section.arrivals { padding-top:60px; }
 @media(max-width:640px) { .bundle-campaign + .section.arrivals { padding-top:40px; } }
+
+.product-tag.sold-out-tag { background:var(--navy); color:white; }

@@ -95,6 +95,7 @@ export function CartContents({
         </Link>
       </div>
     );
+  const unavailable = cart.items.some(item => !productBySku(item.sku)?.available);
   const offer = bundleOffer(cart.items);
   const subtotal = cart.items.reduce(
     (n, item) => n + (productBySku(item.sku)?.priceMinor || 0) * item.quantity,
@@ -103,6 +104,7 @@ export function CartContents({
   return (
     <div className={`cart-content ${compact ? "compact" : ""}`}>
       <div className="cart-lines">
+        {unavailable && <p role="alert">An item in your bag is sold out. Remove it before checkout.</p>}
         {cart.items.map((item, i) => {
           const p = productBySku(item.sku);
           if (!p) return null;
@@ -259,7 +261,7 @@ export function CartContents({
             <WhatsAppCheckout
               key={snapshot}
               items={cart.items}
-              ready={!loading && (!!quote || canResume)}
+              ready={!unavailable && !loading && (!!quote || canResume)}
               onValidated={setQuote}
               onBusyChange={setCheckoutBusy}
               onAttemptCleared={() => setQuoteRevision((value) => value + 1)}

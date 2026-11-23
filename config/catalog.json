@@ -100,7 +100,8 @@
     },
     "white_hoodie": {
       "family": "signature-hoodie",
-      "description": "A premium everyday hoodie featuring a clean white finish, a relaxed fit, soft fabric, a spacious hood, and a classic kangaroo pocket. Designed for effortless comfort and modern streetwear styling."
+      "description": "A premium everyday hoodie featuring a clean white finish, a relaxed fit, soft fabric, a spacious hood, and a classic kangaroo pocket. Designed for effortless comfort and modern streetwear styling.",
+      "available": false
     }
   },
   "promotionalImages": [

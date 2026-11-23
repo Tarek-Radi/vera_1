@@ -84,6 +84,10 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [notice]);
   function add(line: CartLine) {
+    if (!productBySku(line.sku)?.available) {
+      setNotice("This product is sold out and cannot be added to your bag.");
+      return false;
+    }
     const existing = items.find(
       (x) => x.sku === line.sku && x.size === line.size,
     );

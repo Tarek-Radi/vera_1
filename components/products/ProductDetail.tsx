@@ -160,6 +160,7 @@ export function ProductDetail({
         <p className="eyebrow">THE VERA COLLECTION / {product.categoryLabel}</p>
         <h1>{product.name}</h1>
         <Price product={product} />
+        {!product.available && <p role="status">SOLD OUT — All sizes are unavailable.</p>}
         <p className="product-description">{product.description}</p>
         <div className="product-options">
           <span className="field-label">
@@ -196,6 +197,7 @@ export function ProductDetail({
             {product.sizes.map((s) => (
               <button
                 key={s}
+                disabled={!product.available}
                 className={s === size ? "selected" : ""}
                 aria-pressed={s === size}
                 onClick={() => {
@@ -212,7 +214,7 @@ export function ProductDetail({
             <div className="quantity">
               <button
                 aria-label="Decrease quantity"
-                disabled={quantity === 1}
+                disabled={!product.available || quantity === 1}
                 onClick={() => {
                   setQuantity(quantity - 1);
                   setCouponResult(null);
@@ -223,7 +225,7 @@ export function ProductDetail({
               <span aria-live="polite">{quantity}</span>
               <button
                 aria-label="Increase quantity"
-                disabled={quantity === 20}
+                disabled={!product.available || quantity === 20}
                 onClick={() => {
                   setQuantity(quantity + 1);
                   setCouponResult(null);
@@ -237,7 +239,7 @@ export function ProductDetail({
               disabled={!product.available}
               onClick={() => add(false)}
             >
-              {product.available ? "Add to bag" : "Currently unavailable"}
+              {product.available ? "Add to bag" : "Sold Out"}
               <Plus size={17} />
             </button>
           </div>
@@ -252,7 +254,7 @@ export function ProductDetail({
             <span />
             {product.available
               ? "Available to order · Confirmed by VERA on WhatsApp"
-              : "Currently unavailable"}
+              : "Sold Out"}
           </p>
         </div>
         {!databaseFreeCheckout && (
@@ -354,7 +356,7 @@ export function ProductDetail({
             add(false);
           }}
         >
-          {size ? "Add to bag" : "Choose size"} <Plus size={16} />
+          {!product.available ? "Sold Out" : size ? "Add to bag" : "Choose size"} <Plus size={16} />
         </button>
       </div>
     </div>

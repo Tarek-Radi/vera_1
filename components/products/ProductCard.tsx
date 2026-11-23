@@ -22,11 +22,11 @@ export function ProductCard({ product }: { product: Product }) {
           fill
           sizes="(max-width: 640px) 50vw, (max-width: 1000px) 33vw, 25vw"
         />
-        <span className="product-tag">
-          {product.available ? (product.compareAtMinor ? "SALE" : product.categoryLabel) : "Unavailable"}
+        <span className={`product-tag${product.available ? "" : " sold-out-tag"}`}>
+          {product.available ? (product.compareAtMinor ? "SALE" : product.categoryLabel) : "SOLD OUT"}
         </span>
         <span className="quick-view">
-          Choose your size <Plus size={17} />
+          {product.available ? <>Choose your size <Plus size={17} /></> : "Sold Out"}
         </span>
       </Link>
       <div className="product-card-meta">
