@@ -13,6 +13,7 @@ import { products, promotionalImage, bundleImage } from "../lib/catalog";
 import { brand } from "../config/brand";
 export const metadata = { alternates: { canonical: "/" } };
 export default function Home() {
+  const senior = products.find(p => p.family === "senior-graduation");
   const arrivals = [...products]
     .sort((a, b) => b.firstSeenAt.localeCompare(a.firstSeenAt))
     .slice(0, 4);
@@ -163,6 +164,20 @@ export default function Home() {
           <Link href="/shop" className="button bundle-cta">Shop the Bundle <ArrowUpRight size={18} aria-hidden="true" /></Link>
         </div>
       </section>
+      {senior && (
+        <section className="senior-campaign" aria-labelledby="senior-heading">
+          <div className="senior-copy">
+            <p className="eyebrow">SPECIAL GRADUATION DROP</p>
+            <h2 id="senior-heading">Your Senior Year.<br />Your Story.</h2>
+            <p>Make your final year unforgettable. Celebrate your graduation with the VERA Senior Hoodie.</p>
+            <Link className="button light" href={`/products/${senior.slug}`}>SHOP SENIOR HOODIE <ArrowUpRight size={18} /></Link>
+            <small>A special piece for a special year.</small>
+          </div>
+          <Link className="senior-banner" href={`/products/${senior.slug}`} aria-label="View Senior Hoodie">
+            <Image src={senior.images[3]} alt="VERA Senior Hoodie graduation design, front and back" width={1672} height={941} sizes="(max-width:800px) 100vw, 65vw" />
+          </Link>
+        </section>
+      )}
       {arrivals.length > 0 && (
         <section className="section arrivals">
           <div className="section-heading">

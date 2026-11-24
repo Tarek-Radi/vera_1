@@ -16,6 +16,7 @@ import {
 import { type Product, colorHex, money } from "../../lib/catalog";
 import { useCart } from "../cart/CartProvider";
 import { Modal } from "../ui/Modal";
+import { printNameSchema } from "../../lib/orders/personalization";
 import { Price } from "./ProductCard";
 export function ProductDetail({
   product,
@@ -26,6 +27,8 @@ export function ProductDetail({
 }) {
   const cart = useCart(),
     router = useRouter();
+  const [printName, setPrintName] = useState("");
+  const senior = product.slug === "senior-hoodie";
   const touchStart = useRef(0);
   const swiped = useRef(false);
   const [size, setSize] = useState(
@@ -49,12 +52,17 @@ export function ProductDetail({
       return;
     }
     if (!product.available) return;
+    if (senior && !printNameSchema.safeParse(printName).success) {
+      setError("Enter a valid name to print (1–20 characters).");
+      return;
+    }
     setError("");
     if (
       cart.add({
         sku: product.sku,
         size,
         quantity,
+        ...(senior ? { printName: printName.trim() } : {}),
         ...(couponResult ? { coupon: couponResult.code } : {}),
       })
     ) {
@@ -80,6 +88,7 @@ export function ProductDetail({
               sku: product.sku,
               size,
               quantity,
+        ...(senior ? { printName: printName.trim() } : {}),
               coupon: coupon.trim().toUpperCase(),
             },
           ],
@@ -160,7 +169,7 @@ export function ProductDetail({
         <p className="eyebrow">THE VERA COLLECTION / {product.categoryLabel}</p>
         <h1>{product.name}</h1>
         <Price product={product} />
-        {!product.available && <p role="status">SOLD OUT — All sizes are unavailable.</p>}
+        {!product.available && <p role="status">{product.availabilityLabel || "SOLD OUT — All sizes are unavailable."}</p>}
         <p className="product-description">{product.description}</p>
         <div className="product-options">
           <span className="field-label">
@@ -210,6 +219,12 @@ export function ProductDetail({
               </button>
             ))}
           </div>
+          {senior && <div className="senior-personalization">
+            <p className="eyebrow">PERSONALIZE YOUR HOODIE</p>
+            <label htmlFor="print-name">Name to print on your hoodie</label>
+            <input id="print-name" value={printName} onChange={e=>setPrintName(e.target.value)} maxLength={20} required placeholder="Enter your name..." aria-describedby="print-name-help" />
+            <small id="print-name-help">Your name will replace the &quot;NAME&quot; text in the hoodie design.</small>
+          </div>}
           <div className="purchase-row">
             <div className="quantity">
               <button
@@ -239,7 +254,7 @@ export function ProductDetail({
               disabled={!product.available}
               onClick={() => add(false)}
             >
-              {product.available ? "Add to bag" : "Sold Out"}
+              {product.available ? "Add to bag" : (product.availabilityLabel || "Sold Out")}
               <Plus size={17} />
             </button>
           </div>
@@ -254,7 +269,7 @@ export function ProductDetail({
             <span />
             {product.available
               ? "Available to order · Confirmed by VERA on WhatsApp"
-              : "Sold Out"}
+              : (product.availabilityLabel || "Sold Out")}
           </p>
         </div>
         {!databaseFreeCheckout && (
@@ -356,7 +371,7 @@ export function ProductDetail({
             add(false);
           }}
         >
-          {!product.available ? "Sold Out" : size ? "Add to bag" : "Choose size"} <Plus size={16} />
+          {!product.available ? (product.availabilityLabel || "Sold Out") : size ? "Add to bag" : "Choose size"} <Plus size={16} />
         </button>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { personalizationNotes } from "./personalization";
 import {
   cartSchema,
   checkoutSchema,
@@ -24,7 +25,7 @@ export function checkoutWithoutDatabase(input: unknown) {
   const quote = quoteWithoutDatabase({ items: parsed.items });
   const order = {
     ...quote,
-    customer: parsed.customer,
+    customer: { ...parsed.customer, notes: [parsed.customer.notes, personalizationNotes(quote.items)].filter(Boolean).join("\n\n") },
     status: "UNSAVED",
     orderNumber: "",
     expiresAt: "",
@@ -35,7 +36,7 @@ export function checkoutWithoutDatabase(input: unknown) {
     "\nالطلب بيتابع على واتساب؛ الموقع مش بيحفظ سجل للطلب ومش بيقدر يتأكد من إرسال الرسالة.";
   return {
     ...quote,
-    customer: parsed.customer,
+    customer: { ...parsed.customer, notes: [parsed.customer.notes, personalizationNotes(quote.items)].filter(Boolean).join("\n\n") },
     shippingCharge: null,
     saved: false,
     invoice,

@@ -11,7 +11,7 @@ it("uses sale prices for all hoodies and five pants through checkout", () => {
     expect(p.compareAtMinor).toBe(65000);
     expect(p.images.length).toBeGreaterThan(0);
   }
-  const lines = validateLines(affected.map(p => ({ sku:p.sku, size:p.sizes[0], quantity:2 })));
+  const lines = validateLines(affected.map(p => ({ sku:p.sku, size:p.sizes[0], quantity:2, ...(p.slug === "senior-hoodie" ? {printName:"Test"} : {}) })));
   expect(lines.every(l => l.unitPrice === 60000 && l.lineTotal === 120000)).toBe(true);
   expect(totals(lines).totalBeforeShipping).toBe(affected.length * 120000 - Math.min(pants.length, affected.length - pants.length) * 2 * 20000);
 });

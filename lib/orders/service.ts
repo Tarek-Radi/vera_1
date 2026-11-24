@@ -1,3 +1,4 @@
+import { personalizationNotes } from "./personalization";
 import { customerSchema, type CheckoutCustomer } from "./customer";
 import { whatsappHandoff } from "../whatsapp";
 import "server-only";
@@ -102,6 +103,7 @@ export async function checkout(
   details: CheckoutCustomer,
 ) {
   const customer = customerSchema.parse(details);
+  customer.notes = [customer.notes, personalizationNotes(validateLines(items))].filter(Boolean).join("\n\n");
   const requestHash = createHash("sha256")
     .update(JSON.stringify({ items, customer }))
     .digest("hex");

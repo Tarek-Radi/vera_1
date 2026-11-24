@@ -7,6 +7,7 @@ import {
   useState,
   type ReactNode,
 } from "react";
+import { isSenior, printNameSchema } from "../../lib/orders/personalization";
 import { productBySku } from "../../lib/catalog";
 import type { CartLine } from "../../lib/orders/validation";
 type CartContextValue = {
@@ -38,7 +39,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
           saved.slice(0, 20).flatMap((x) => {
             if (!x || typeof x !== "object") return [];
             const p = productBySku(x.sku),
-              key = `${x.sku}:${x.size}`;
+              key = JSON.stringify([x.sku,x.size,x.printName || ""]);
             if (
               !p ||
               !p.sizes.includes(x.size) ||
@@ -51,6 +52,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
             seen.add(key);
             return [
               {
+                ...(typeof x.printName === "string" ? { printName: x.printName } : {}),
                 sku: p.sku,
                 size: x.size,
                 quantity: x.quantity,
@@ -84,12 +86,17 @@ export function CartProvider({ children }: { children: ReactNode }) {
     return () => clearTimeout(timer);
   }, [notice]);
   function add(line: CartLine) {
+    if (isSenior(line.sku)) {
+      const parsed = printNameSchema.safeParse(line.printName);
+      if (!parsed.success) { setNotice("Enter a valid name to print."); return false; }
+      line = { ...line, printName: parsed.data };
+    } else if (line.printName !== undefined) return false;
     if (!productBySku(line.sku)?.available) {
       setNotice("This product is sold out and cannot be added to your bag.");
       return false;
     }
     const existing = items.find(
-      (x) => x.sku === line.sku && x.size === line.size,
+      (x) => x.sku === line.sku && x.size === line.size && x.printName === line.printName,
     );
     if (
       existing &&
@@ -137,7 +144,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       items.some(
         (x, i) =>
           i !== index &&
-          ((x.sku === next.sku && x.size === next.size) ||
+          ((x.sku === next.sku && x.size === next.size && x.printName === next.printName) ||
             (next.coupon && x.coupon === next.coupon)),
       )
     ) {

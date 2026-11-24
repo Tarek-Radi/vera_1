@@ -75,6 +75,7 @@ export function parseProduct(relative, config) {
     compareAtMinor,
     sizes,
     available: meta.available !== false,
+    availabilityLabel: meta.availabilityLabel || null,
     featured: meta.featured === true,
     family: meta.family || null,
     description: scarfWording(meta.description || category.description),

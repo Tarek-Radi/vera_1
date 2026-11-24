@@ -1,4 +1,5 @@
 "use client";
+import { personalizationNotes } from "../../lib/orders/personalization";
 import { databaseFreeCheckout } from "../../config/checkout";
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import {
@@ -65,6 +66,7 @@ export function WhatsAppCheckout({
     active = useRef(false),
     attempt = useRef<Attempt | null>(null),
     message = useRef<HTMLTextAreaElement>(null);
+  const autoNotes = personalizationNotes(items);
   const snapshot = JSON.stringify(items);
   useEffect(() => {
     active.current = true;
@@ -191,6 +193,7 @@ export function WhatsAppCheckout({
   return (
     <>
       <form className="checkout-form" onSubmit={submit} aria-busy={busy}>
+        {autoNotes && <div><strong>Personalization added to order notes</strong><p style={{ whiteSpace: "pre-line" }}>{autoNotes}</p></div>}
         <h3>Delivery details</h3>
         <p className="muted">
           Your details are saved with your order and included in WhatsApp.

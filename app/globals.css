@@ -2617,3 +2617,16 @@ td small {
 @media(max-width:640px) { .bundle-campaign + .section.arrivals { padding-top:40px; } }
 
 .product-tag.sold-out-tag { background:var(--navy); color:white; }
+
+.senior-campaign { display:grid; grid-template-columns:1fr 1.8fr; align-items:center; background:#07152d; color:#fff; margin:48px 0; }
+.senior-copy { padding:clamp(28px,4vw,64px); }
+.senior-copy h2 { font-size:clamp(30px,3.4vw,54px); line-height:1.08; letter-spacing:-.035em; margin:20px 0; }
+.senior-copy>p:not(.eyebrow) { color:#c9d7e9; line-height:1.7; margin-bottom:26px; }
+.senior-copy small { display:block; color:#aabbd3; margin-top:18px; }
+.senior-banner { display:block; }
+.senior-banner img { display:block; width:100%; height:auto; }
+@media(max-width:800px) { .senior-campaign { grid-template-columns:1fr; } .senior-copy { text-align:center; } }
+
+.senior-personalization { display:grid; gap:10px; margin:24px 0; }
+.senior-personalization input { width:100%; padding:14px; border:1px solid var(--line); font:inherit; }
+.senior-personalization small { color:#526477; line-height:1.5; }

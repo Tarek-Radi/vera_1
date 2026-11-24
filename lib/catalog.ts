@@ -12,6 +12,7 @@ export type Product = {
   compareAtMinor: number | null;
   sizes: string[];
   available: boolean;
+  availabilityLabel?: string | null;
   featured: boolean;
   family: string | null;
   description: string;

@@ -58,5 +58,10 @@
     "sku": "VER-HOD-WHI-BE3B1335AB",
     "slug": "white-hoodie-be3b1335ab",
     "firstSeenAt": "2026-11-23T05:23:26.908Z"
+  },
+  "senior/white_hoodie": {
+    "sku": "VER-HOD-WHI-AC014B11E0",
+    "slug": "senior-hoodie",
+    "firstSeenAt": "2026-11-24T11:33:18.020Z"
   }
 }

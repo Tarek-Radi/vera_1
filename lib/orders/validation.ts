@@ -1,3 +1,4 @@
+import { isSenior, printNameSchema } from "./personalization";
 import { customerSchema } from "./customer";
 import { z } from "zod";
 import { productBySku, type Product } from "../catalog";
@@ -12,6 +13,7 @@ export class StoreError extends Error {
 }
 export const lineSchema = z
   .object({
+    printName: printNameSchema.optional(),
     sku: z.string().min(4).max(64),
     size: z.string().min(1).max(40),
     quantity: z.number().int().min(1).max(20),
@@ -57,7 +59,12 @@ export function validateLines(
       );
     if (!p.sizes.includes(item.size))
       throw new StoreError(`Please select an available size for ${p.name}.`);
-    const key = `${item.sku}:${item.size}`;
+    if (isSenior(item.sku)) {
+      const result = printNameSchema.safeParse(item.printName);
+      if (!result.success) throw new StoreError("Enter a valid name to print (1–20 characters) for Senior Hoodie.");
+      item = { ...item, printName: result.data };
+    } else if (item.printName !== undefined) throw new StoreError("Personalization is only available for Senior Hoodie.");
+    const key = JSON.stringify([item.sku, item.size, item.printName || ""]);
     if (keys.has(key))
       throw new StoreError(
         "Please combine duplicate product and size entries.",

@@ -110,7 +110,7 @@ export function CartContents({
           if (!p) return null;
           const priced = quote?.items[i];
           return (
-            <article className="cart-line" key={`${item.sku}:${item.size}`}>
+            <article className="cart-line" key={JSON.stringify([item.sku, item.size, item.printName || ""])}>
               <Link
                 href={`/products/${p.slug}`}
                 onClick={() => cart.setOpen(false)}

@@ -102,6 +102,18 @@
       "family": "signature-hoodie",
       "description": "A premium everyday hoodie featuring a clean white finish, a relaxed fit, soft fabric, a spacious hood, and a classic kangaroo pocket. Designed for effortless comfort and modern streetwear styling.",
       "available": false
+    },
+    "senior/white_hoodie": {
+      "name": "Senior Hoodie",
+      "slug": "senior-hoodie",
+      "family": "senior-graduation",
+      "available": true,
+      "description": "Your senior year, your story. A graduation-inspired hoodie with distinctive blue artwork celebrating the memories, friendships and next chapter ahead. Mockups illustrate the design; confirm any personalization with VERA before ordering.",
+      "images": [
+        "White Hoodie with Blue Cursive Name Graphic.png",
+        "Blue Seniors Graduation Sticker.png",
+        "Vera Seniors Hoodie Mockup Banner.png"
+      ]
     }
   },
   "promotionalImages": [
@@ -114,6 +126,7 @@
     "Dark Brown VERA Sweatpants Showcase.png": "brown_pants_600.png",
     "Navy VERA Sweatpants Studio Display.png": "navy_pants_600.png",
     "Charcoal VERA Sweatpants Display.png": "dark-grey_pants_600.png",
-    "white_hoodie.png": "white_hoodie_600.png"
+    "white_hoodie.png": "white_hoodie_600.png",
+    "Blue 2027 Seniors Hoodie Mockup.png": "senior/white_hoodie_600.png"
   }
 }

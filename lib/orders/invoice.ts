@@ -40,6 +40,7 @@ export function invoiceText(o: OrderInvoice) {
     ...o.items.flatMap((x, i) => [
       "",
       `${i + 1}. ${scarfWording(x.name)}`,
+      `SKU: ${x.sku}`,
       `اللون: ${x.color}`,
       `المقاس: ${x.size}`,
       `الكمية: ${x.quantity}`,
